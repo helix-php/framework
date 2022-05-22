@@ -203,10 +203,6 @@
         "dev:package-alias": "monorepo-builder package-alias",
         "dev:propagate": "monorepo-builder propagate",
         "dev:validate": "monorepo-builder validate",
-        "post-create-project-cmd": "@prepare",
-        "prepare": [
-            "@php do orm:schema-tool:update"
-        ],
         "phpcs": "php-cs-fixer fix --config=.php-cs-fixer.php"
     },
     "minimum-stability": "dev",
