@@ -22,7 +22,6 @@
         "doctrine/orm": "^2.11",
         "filp/whoops": "^2.14",
         "happyr/doctrine-specification": "^1.1",
-        "helix/server-implementation": "^1.0",
         "monolog/monolog": "^2.3",
         "nikic/fast-route": "^1.3",
         "nyholm/psr7": "^1.5",
@@ -41,18 +40,6 @@
         "symfony/yaml": "^5.4|^6.0",
         "twig/twig": "^3.3",
         "vlucas/phpdotenv": "^5.4"
-    },
-    "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.8",
-        "httpsoft/http-message": "^1.0",
-        "jetbrains/phpstorm-attributes": "^1.0",
-        "laminas/laminas-diactoros": "^2.12",
-        "phpunit/phpunit": "^9.5.20",
-        "stella-maris/clock": "^0.1",
-        "symfony/http-foundation": "^5.4|^6.0",
-        "symfony/var-dumper": "^5.4|^6.0",
-        "symplify/monorepo-builder": "^10.0",
-        "vimeo/psalm": "^4.22"
     },
     "autoload": {
         "exclude-from-classmap": [
@@ -109,6 +96,18 @@
             "Helix\\View\\Engine\\Twig\\": "libs/view-engine-twig/src"
         }
     },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "httpsoft/http-message": "^1.0",
+        "jetbrains/phpstorm-attributes": "^1.0",
+        "laminas/laminas-diactoros": "^2.12",
+        "phpunit/phpunit": "^9.5.20",
+        "stella-maris/clock": "^0.1",
+        "symfony/http-foundation": "^5.4|^6.0",
+        "symfony/var-dumper": "^5.4|^6.0",
+        "symplify/monorepo-builder": "^10.0",
+        "vimeo/psalm": "^4.22"
+    },
     "autoload-dev": {
         "psr-4": {
             "App\\Tests\\": "tests",
@@ -140,29 +139,6 @@
             "Helix\\View\\Engine\\Twig\\Tests\\": "libs/view-engine-twig/tests",
             "Helix\\View\\Tests\\": "libs/view/tests"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.x-dev",
-            "dev-main": "1.0.x-dev"
-        }
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true
-        }
-    },
-    "scripts": {
-        "dev:merge": "monorepo-builder merge",
-        "dev:package-alias": "monorepo-builder package-alias",
-        "dev:propagate": "monorepo-builder propagate",
-        "dev:validate": "monorepo-builder validate",
-        "post-create-project-cmd": "@prepare",
-        "prepare": [
-            "@php do orm:schema-tool:update"
-        ],
-        "phpcs": "php-cs-fixer fix --config=.php-cs-fixer.php"
     },
     "replace": {
         "helix/arrayable-contracts": "self.version",
@@ -209,6 +185,29 @@
         "helix/view-contracts": "self.version",
         "helix/view-engine-php": "self.version",
         "helix/view-engine-twig": "self.version"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev",
+            "dev-main": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "scripts": {
+        "dev:merge": "monorepo-builder merge",
+        "dev:package-alias": "monorepo-builder package-alias",
+        "dev:propagate": "monorepo-builder propagate",
+        "dev:validate": "monorepo-builder validate",
+        "post-create-project-cmd": "@prepare",
+        "prepare": [
+            "@php do orm:schema-tool:update"
+        ],
+        "phpcs": "php-cs-fixer fix --config=.php-cs-fixer.php"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
