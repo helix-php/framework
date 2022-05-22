@@ -13,7 +13,6 @@
 >
     <coverage>
         <include>
-            <directory suffix=".php">app</directory>
             <directory suffix=".php">libs/*/src</directory>
             <directory suffix=".php">libs/bridge/*/src</directory>
             <directory suffix=".php">libs/contracts/*/src</directory>
