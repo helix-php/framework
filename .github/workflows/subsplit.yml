@@ -1,0 +1,134 @@
+name: subsplit
+
+on:
+  push:
+  pull_request:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+jobs:
+  subsplit:
+    name: Split (${{ matrix.package.local_path }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+            # -------- Bridges --------
+          - local_path: 'bridge/doctrine'
+            split_repository: 'doctrine-bridge'
+          - local_path: 'bridge/cache'
+            split_repository: 'cache-bridge'
+          - local_path: 'bridge/monolog'
+            split_repository: 'monolog-bridge'
+          # -------- Contracts --------
+          - local_path: 'contracts/arrayable'
+            split_repository: 'arrayable-contracts'
+          - local_path: 'contracts/container'
+            split_repository: 'container-contracts'
+          - local_path: 'contracts/error-handler'
+            split_repository: 'error-handler-contracts'
+          - local_path: 'contracts/error-handler-http'
+            split_repository: 'error-handler-http-contracts'
+          - local_path: 'contracts/event-dispatcher'
+            split_repository: 'event-dispatcher-contracts'
+          - local_path: 'contracts/http-header'
+            split_repository: 'http-header-contracts'
+          - local_path: 'contracts/http-method'
+            split_repository: 'http-method-contracts'
+          - local_path: 'contracts/http-status-code'
+            split_repository: 'http-status-code-contracts'
+          - local_path: 'contracts/memoizable'
+            split_repository: 'memoizable-contracts'
+          - local_path: 'contracts/middleware'
+            split_repository: 'middleware-contracts'
+          - local_path: 'contracts/mime'
+            split_repository: 'mime-contracts'
+          - local_path: 'contracts/param-resolver'
+            split_repository: 'param-resolver-contracts'
+          - local_path: 'contracts/router'
+            split_repository: 'router-contracts'
+          - local_path: 'contracts/view'
+            split_repository: 'view-contracts'
+          # -------- Packages --------
+          - local_path: 'boot'
+            split_repository: 'boot'
+          - local_path: 'clock'
+            split_repository: 'clock'
+          - local_path: 'config'
+            split_repository: 'config'
+          - local_path: 'container'
+            split_repository: 'container'
+          - local_path: 'debug'
+            split_repository: 'debug'
+          - local_path: 'env'
+            split_repository: 'env'
+          - local_path: 'event-dispatcher'
+            split_repository: 'event-dispatcher'
+          - local_path: 'foundation'
+            split_repository: 'foundation'
+          - local_path: 'foundation-console'
+            split_repository: 'foundation-console'
+          - local_path: 'foundation-http'
+            split_repository: 'foundation-http'
+          - local_path: 'http'
+            split_repository: 'http'
+          - local_path: 'http-header'
+            split_repository: 'http-header'
+          - local_path: 'http-method'
+            split_repository: 'http-method'
+          - local_path: 'http-status-code'
+            split_repository: 'http-status-code'
+          - local_path: 'middleware'
+            split_repository: 'middleware'
+          - local_path: 'mime'
+            split_repository: 'mime'
+          - local_path: 'param-resolver'
+            split_repository: 'param-resolver'
+          - local_path: 'pool'
+            split_repository: 'pool'
+          - local_path: 'router'
+            split_repository: 'router'
+          - local_path: 'router-generator'
+            split_repository: 'router-generator'
+          - local_path: 'server'
+            split_repository: 'server'
+          - local_path: 'server-sapi'
+            split_repository: 'server-sapi'
+          - local_path: 'session'
+            split_repository: 'session'
+          - local_path: 'session-http'
+            split_repository: 'session-http'
+          - local_path: 'view'
+            split_repository: 'view'
+          - local_path: 'view-engine-php'
+            split_repository: 'view-engine-php'
+          - local_path: 'view-engine-twig'
+            split_repository: 'view-engine-twig'
+    steps:
+      - uses: actions/checkout@v2
+      # no tag
+      - if: "!startsWith(github.ref, 'refs/tags/')"
+        name: Monorepo Split of ${{ matrix.package.split_repository }}
+        uses: symplify/github-action-monorepo-split@2.0
+        with:
+          package-directory: 'libs/${{ matrix.package.local_path }}'
+          split-repository-organization: 'helix-php'
+          split-repository-name: '${{ matrix.package.split_repository }}'
+          user-name: "GitHub Action"
+          user-email: "action@github.com"
+          branch: "master"
+      # with tag
+      - if: "startsWith(github.ref, 'refs/tags/')"
+        name: Monorepo Tagged Split of ${{ matrix.package }}
+        uses: symplify/github-action-monorepo-split@2.0
+        with:
+          tag: ${GITHUB_REF#refs/tags/}
+          package-directory: 'libs/${{ matrix.package.local_path }}'
+          split-repository-organization: 'helix-php'
+          split-repository-name: '${{ matrix.package.split_repository }}'
+          user-name: "GitHub Action"
+          user-email: "action@github.com"
+          branch: "master"
