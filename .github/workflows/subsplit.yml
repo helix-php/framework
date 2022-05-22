@@ -9,7 +9,7 @@ env:
 
 jobs:
   subsplit:
-    name: Split (${{ matrix.package.local_path }})
+    name: Split helix/${{ matrix.package.split_repository }}
     runs-on: ubuntu-latest
 
     strategy:
