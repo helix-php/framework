@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Helix\Boot;
 
 use Helix\Boot\Attribute\Execution;
-use Helix\Boot\Attribute\Registration;
+use Helix\Boot\Attribute\Register;
 use Helix\Boot\Attribute\ServiceDefinition;
 use Helix\Container\Container;
 use Helix\Container\Exception\RegistrationException;
@@ -42,7 +42,7 @@ class Loader implements RepositoryInterface, LoaderInterface
     private array $extensions = [];
 
     /**
-     * @var array<array{Registration, \Closure}>
+     * @var array<array{Register, \Closure}>
      */
     private array $registrable = [];
 
@@ -125,11 +125,11 @@ class Loader implements RepositoryInterface, LoaderInterface
 
     /**
      * @param ExtensionInterface $provider
-     * @return iterable<Registration, \Closure>
+     * @return iterable<Register, \Closure>
      */
     private function lookupRegistrars(ExtensionInterface $provider): iterable
     {
-        foreach ($provider->getMethodMetadata(Registration::class) as $method => $attribute) {
+        foreach ($provider->getMethodMetadata(Register::class) as $method => $attribute) {
             yield $attribute => $method->getClosure(
                 $provider->getContext()
             );

@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Helix\EventDispatcher;
 
-use Helix\Contracts\EventDispatcher\EventInterface;
 use Helix\Contracts\EventDispatcher\EventSubscriptionInterface;
 use Helix\Contracts\EventDispatcher\ListenerInterface;
 use Helix\EventDispatcher\Exception\ListenerException;
@@ -19,19 +18,19 @@ use Helix\EventDispatcher\Exception\ListenerSignatureException;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
 /**
- * @template T of EventInterface
+ * @template T of object
  * @template-implements ListenerInterface<T>
  * @template-implements \IteratorAggregate<EventSubscriptionInterface>
  */
 final class Listener implements ListenerInterface, ListenerProviderInterface, \IteratorAggregate, \Countable
 {
     /**
-     * @var array<class-string<EventInterface>, array<EventSubscriptionInterface>>
+     * @var array<class-string<object>, array<EventSubscriptionInterface>>
      */
     private array $subscriptions = [];
 
     /**
-     * @var array<string, class-string<EventInterface>>
+     * @var array<string, class-string<object>>
      */
     private array $index = [];
 
@@ -121,7 +120,7 @@ final class Listener implements ListenerInterface, ListenerProviderInterface, \I
      */
     public function once(string $event, callable $handler): Subscription
     {
-        $decorator = static function (EventInterface $e, EventSubscriptionInterface $ctx) use ($handler): void {
+        $decorator = static function (object $e, EventSubscriptionInterface $ctx) use ($handler): void {
             $handler($e, $ctx);
 
             $ctx->cancel();

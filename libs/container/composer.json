@@ -4,6 +4,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "helix/event-dispatcher": "^1.0",
         "helix/container-contracts": "^1.0",
         "helix/param-resolver": "^1.0"
     },

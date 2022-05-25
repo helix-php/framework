@@ -23,14 +23,6 @@ class WeakSingletonDefinition extends LazyDefinition
     protected ?\WeakReference $ref = null;
 
     /**
-     * @param \Closure():TDefinition $initializer
-     */
-    public function __construct(\Closure $initializer)
-    {
-        parent::__construct($initializer);
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function resolve(): object

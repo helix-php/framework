@@ -16,25 +16,35 @@ use Helix\Container\Definition\FactoryDefinition;
 use Helix\Container\Definition\InstanceDefinition;
 use Helix\Container\Definition\SingletonDefinition;
 use Helix\Container\Definition\WeakSingletonDefinition;
+use Helix\Container\Event\Resolved;
+use Helix\Container\Event\Resolving;
 use Helix\Container\Exception\ServiceNotFoundException;
 use Helix\Contracts\Container\DefinitionInterface;
 use Helix\Contracts\Container\DispatcherInterface;
 use Helix\Contracts\Container\InstantiatorInterface;
 use Helix\Contracts\Container\RegistrarInterface;
 use Helix\Contracts\Container\RepositoryInterface;
+use Helix\Contracts\EventDispatcher\DispatcherInterface as EventDispatcherInterface;
+use Helix\Contracts\EventDispatcher\EventSubscriptionInterface;
+use Helix\Contracts\EventDispatcher\ListenerInterface;
+use Helix\Contracts\EventDispatcher\ListenerInterface as EventListenerInterface;
 use Helix\Contracts\ParamResolver\ParamResolverInterface;
+use Helix\Contracts\ParamResolver\RegistrarInterface as ParamResolverRegistrarInterface;
+use Helix\Contracts\ParamResolver\RepositoryInterface as ParamResolverRepositoryInterface;
 use Helix\Contracts\ParamResolver\ValueResolverInterface;
+use Helix\EventDispatcher\Dispatcher as EventDispatcher;
+use Helix\EventDispatcher\Listener as EventListener;
 use Helix\ParamResolver\Resolver;
 use Helix\ParamResolver\ValueResolver\ContainerServiceResolver;
 use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as PsrContainerInterface;
+use Helix\Contracts\Container\ContainerInterface;
 
 final class Container implements
-    RepositoryInterface,
     ContainerInterface,
-    RegistrarInterface,
     DispatcherInterface,
-    InstantiatorInterface
+    InstantiatorInterface,
+    RegistrarInterface
 {
     /**
      * @var Registry
@@ -42,9 +52,9 @@ final class Container implements
     private readonly Registry $definitions;
 
     /**
-     * @var ParamResolverInterface
+     * @var Resolver
      */
-    private readonly ParamResolverInterface $resolver;
+    private readonly Resolver $resolver;
 
     /**
      * @var InstantiatorInterface
@@ -54,14 +64,27 @@ final class Container implements
     /**
      * @var DispatcherInterface
      */
-    private readonly DispatcherInterface $dispatcher;
+    private DispatcherInterface $dispatcher;
 
     /**
-     * @param ContainerInterface|null $parent
+     * @var EventDispatcherInterface
+     */
+    private EventDispatcherInterface $events;
+
+    /**
+     * @var EventListenerInterface
+     */
+    private EventListenerInterface $listener;
+
+    /**
+     * @param PsrContainerInterface|null $parent
      */
     public function __construct(
-        private readonly ?ContainerInterface $parent = null,
+        private readonly ?PsrContainerInterface $parent = null,
     ) {
+        $this->listener = new EventListener();
+        $this->events = new EventDispatcher($this->listener);
+
         $this->resolver = new Resolver([
             new ContainerServiceResolver($this),
         ]);
@@ -74,6 +97,34 @@ final class Container implements
     }
 
     /**
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher(): EventDispatcherInterface
+    {
+        return $this->events;
+    }
+
+    /**
+     * @param callable(Resolving):void $handler
+     * @return EventSubscriptionInterface
+     * @throws \Throwable
+     */
+    public function onResolving(callable $handler): EventSubscriptionInterface
+    {
+        return $this->listener->on(Resolving::class, $handler);
+    }
+
+    /**
+     * @param callable(Resolving):void $handler
+     * @return EventSubscriptionInterface
+     * @throws \Throwable
+     */
+    public function onResolved(callable $handler): EventSubscriptionInterface
+    {
+        return $this->listener->on(Resolved::class, $handler);
+    }
+
+    /**
      * @template TIdentifier as object
      *
      * @param non-empty-string|class-string<TIdentifier> $id
@@ -83,7 +134,8 @@ final class Container implements
     public function singleton(string $id, \Closure $registrar = null): DefinitionRegistrarInterface
     {
         return $this->define($id, new SingletonDefinition(
-            $this->detach($registrar ?? fn () => $this->make($id))
+            $this->detach($registrar ?? fn (): object => $this->make($id)),
+            $this->events
         ));
     }
 
@@ -97,7 +149,8 @@ final class Container implements
     public function weak(string $id, \Closure $registrar = null): DefinitionRegistrarInterface
     {
         return $this->define($id, new WeakSingletonDefinition(
-            $this->detach($registrar ?? fn () => $this->make($id))
+            $this->detach($registrar ?? fn (): object => $this->make($id)),
+            $this->events
         ));
     }
 
@@ -111,7 +164,8 @@ final class Container implements
     public function factory(string $id, \Closure $registrar = null): DefinitionRegistrarInterface
     {
         return $this->define($id, new FactoryDefinition(
-            $this->detach($registrar ?? fn () => $this->make($id))
+            $this->detach($registrar ?? fn (): object => $this->make($id)),
+            $this->events
         ));
     }
 
@@ -233,13 +287,18 @@ final class Container implements
      */
     private function registerSelf(): void
     {
-        $this->instance($this)->as(
-            RepositoryInterface::class,
-            ContainerInterface::class,
-            RegistrarInterface::class,
-            DispatcherInterface::class,
-            InstantiatorInterface::class,
-        );
+        $this->instance($this->resolver)
+            ->as(ParamResolverInterface::class)
+            ->as(ParamResolverRegistrarInterface::class)
+            ->as(ParamResolverRepositoryInterface::class);
+
+        $this->instance($this)
+            ->as(PsrContainerInterface::class)
+            ->as(RepositoryInterface::class)
+            ->as(RegistrarInterface::class)
+            ->as(ContainerInterface::class)
+            ->as(DispatcherInterface::class)
+            ->as(InstantiatorInterface::class);
     }
 
     /**

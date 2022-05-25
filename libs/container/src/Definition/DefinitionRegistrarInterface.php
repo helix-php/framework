@@ -11,6 +11,10 @@ declare(strict_types=1);
 
 namespace Helix\Container\Definition;
 
+use Helix\Container\Event\Resolved;
+use Helix\Container\Event\Resolving;
+use Helix\Contracts\EventDispatcher\EventSubscriptionInterface;
+
 interface DefinitionRegistrarInterface
 {
     /**
@@ -23,4 +27,16 @@ interface DefinitionRegistrarInterface
      * @return $this
      */
     public function withInterfaces(): self;
+
+    /**
+     * @param callable(Resolving):void $handler
+     * @return EventSubscriptionInterface
+     */
+    public function onResolving(callable $handler): EventSubscriptionInterface;
+
+    /**
+     * @param callable(Resolved):void $handler
+     * @return EventSubscriptionInterface
+     */
+    public function onResolved(callable $handler): EventSubscriptionInterface;
 }

@@ -14,7 +14,7 @@ namespace Helix\Contracts\Container;
 use Helix\Contracts\ParamResolver\ValueResolverInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
-interface ContainerInterface extends PsrContainerInterface
+interface ContainerInterface extends PsrContainerInterface, RepositoryInterface
 {
     /**
      * Finds an entry of the container by its identifier and returns it.
@@ -24,6 +24,7 @@ interface ContainerInterface extends PsrContainerInterface
      * @param class-string<TService>|non-empty-string $id
      * @param iterable<ValueResolverInterface|class-string<ValueResolverInterface>> $resolvers
      * @return TService
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function get(string $id, iterable $resolvers = []): object;
 
@@ -33,6 +34,7 @@ interface ContainerInterface extends PsrContainerInterface
      *
      * @param non-empty-string $id
      * @return bool
+     * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function has(string $id): bool;
 }

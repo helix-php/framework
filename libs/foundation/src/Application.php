@@ -122,7 +122,15 @@ abstract class Application implements LoaderInterface
      */
     private function loadMany(iterable $extensions): void
     {
-        foreach ($extensions as $extension) {
+        foreach ($extensions as $key => $extension) {
+            if (\is_bool($extension)) {
+                if ($extension === false) {
+                    continue;
+                }
+
+                $extension = $key;
+            }
+
             if ($extension) {
                 if (\is_string($extension)) {
                     $extension = $this->container->make($extension);

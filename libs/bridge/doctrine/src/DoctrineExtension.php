@@ -29,7 +29,7 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
-use Helix\Boot\Attribute\Registration;
+use Helix\Boot\Attribute\Register;
 use Helix\Boot\Attribute\Singleton;
 use Helix\Bridge\Doctrine\Connection\EntityManagerInstantiator;
 use Helix\Config\ConfigInterface;
@@ -41,7 +41,7 @@ use Psr\Cache\CacheItemPoolInterface;
 
 final class DoctrineExtension
 {
-    #[Registration]
+    #[Register]
     public function loadConfiguration(RegistrarInterface $registrar): void
     {
         $registrar->addFile('doctrine.yml');
@@ -97,7 +97,7 @@ final class DoctrineExtension
         return $factory->getDefaultManager();
     }
 
-    #[Registration(ifServiceExists: CliApplication::class)]
+    #[Register(afterResolved: CliApplication::class)]
     public function addConsoleCommands(CliApplication $cli, EntityManagerProvider $em): void
     {
         // Clear Cache

@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Helix\Debug;
 
 use Helix\Boot\Attribute\Info;
-use Helix\Boot\Attribute\Registration;
+use Helix\Boot\Attribute\Register;
 use Helix\Debug\Command\DebugContainerCommand;
 use Helix\Debug\Command\DebugExtensionsCommand;
 use Helix\Debug\Command\DebugRouterCommand;
@@ -21,7 +21,7 @@ use Helix\Foundation\Console\Application;
 #[Info(name: 'Kernel Debug Extension', description: 'Provides list of debug utils')]
 class DebugExtension
 {
-    #[Registration(ifServiceExists: Application::class)]
+    #[Register(afterResolved: Application::class)]
     public function addCommands(Application $cli): void
     {
         $cli->add(DebugExtensionsCommand::class);

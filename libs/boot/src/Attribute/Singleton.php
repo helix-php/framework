@@ -23,6 +23,9 @@ final class Singleton extends ServiceDefinition
      */
     public function create(string $id, Container $container, callable $declarator): DefinitionInterface
     {
-        return new SingletonDefinition($container->detach($declarator));
+        return new SingletonDefinition(
+            $container->detach($declarator),
+            $container->getEventDispatcher(),
+        );
     }
 }

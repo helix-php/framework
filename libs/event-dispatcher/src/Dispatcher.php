@@ -12,14 +12,12 @@ declare(strict_types=1);
 namespace Helix\EventDispatcher;
 
 use Helix\Contracts\EventDispatcher\DispatcherInterface;
-use Helix\Contracts\EventDispatcher\EventInterface;
 use Helix\Contracts\EventDispatcher\EventSubscriptionInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
 /**
- * @template T of EventInterface
+ * @template T of object
  * @template-implements DispatcherInterface<T>
- * @see EventInterface
  */
 final class Dispatcher implements DispatcherInterface
 {

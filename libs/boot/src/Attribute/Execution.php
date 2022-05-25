@@ -16,10 +16,10 @@ use Psr\Container\ContainerInterface;
 abstract class Execution implements MethodMetadataInterface
 {
     /**
-     * @param array<class-string>|class-string $ifServiceExists
+     * @param array<class-string>|class-string $afterResolved
      */
     public function __construct(
-        public readonly array|string $ifServiceExists = []
+        public readonly array|string $afterResolved = []
     ) {
     }
 
@@ -29,7 +29,7 @@ abstract class Execution implements MethodMetadataInterface
      */
     public function shouldLoad(ContainerInterface $app): bool
     {
-        foreach ((array)$this->ifServiceExists as $service) {
+        foreach ((array)$this->afterResolved as $service) {
             if (!$app->has($service)) {
                 return false;
             }

@@ -23,6 +23,9 @@ final class Factory extends ServiceDefinition
      */
     public function create(string $id, Container $container, callable $declarator): DefinitionInterface
     {
-        return new FactoryDefinition($container->detach($declarator));
+        return new FactoryDefinition(
+            $container->detach($declarator),
+            $container->getEventDispatcher(),
+        );
     }
 }

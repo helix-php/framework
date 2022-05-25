@@ -11,8 +11,13 @@ declare(strict_types=1);
 
 namespace Helix\Container\Definition;
 
+use Helix\Container\Event\Resolved;
+use Helix\Container\Event\Resolving;
 use Helix\Container\Exception\RegistrationException;
 use Helix\Container\Registry;
+use Helix\Contracts\EventDispatcher\EventSubscriptionInterface;
+use Helix\EventDispatcher\Exception\ListenerException;
+use Helix\EventDispatcher\Subscription;
 
 final class DefinitionRegistrar implements DefinitionRegistrarInterface
 {
@@ -60,4 +65,40 @@ final class DefinitionRegistrar implements DefinitionRegistrarInterface
 
         return $this;
     }
+
+    /**
+     * @param callable(Resolved):void $handler
+     * @return EventSubscriptionInterface
+     * @throws ListenerException
+     * @throws \Throwable
+     */
+    public function onResolved(callable $handler): EventSubscriptionInterface
+    {
+        $definition = $this->context->definition($this->id);
+
+        if ($definition instanceof LazyDefinition) {
+            return $definition->onResolved($handler);
+        }
+
+        throw new \LogicException('Could not listen non-listenable definition');
+    }
+
+    /**
+     * @param callable(Resolving):void $handler
+     * @return EventSubscriptionInterface
+     * @throws ListenerException
+     * @throws \Throwable
+     */
+    public function onResolving(callable $handler): EventSubscriptionInterface
+    {
+        $definition = $this->context->definition($this->id);
+
+        if ($definition instanceof LazyDefinition) {
+            return $definition->onResolving($handler);
+        }
+
+        throw new \LogicException('Could not listen non-listenable definition');
+    }
+
+
 }

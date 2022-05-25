@@ -54,6 +54,7 @@
             "Helix\\Bridge\\Cache\\": "libs/bridge/cache/src",
             "Helix\\Bridge\\Doctrine\\": "libs/bridge/doctrine/src",
             "Helix\\Bridge\\Monolog\\": "libs/bridge/monolog/src",
+            "Helix\\Bridge\\Twig\\": "libs/bridge/twig/src",
             "Helix\\Clock\\": "libs/clock/src",
             "Helix\\Config\\": "libs/config/src",
             "Helix\\Container\\": "libs/container/src",
@@ -91,9 +92,7 @@
             "Helix\\Server\\Sapi\\": "libs/server-sapi/src",
             "Helix\\Session\\": "libs/session/src",
             "Helix\\Session\\Http\\": "libs/session-http/src",
-            "Helix\\View\\": "libs/view/src",
-            "Helix\\View\\Engine\\Php\\": "libs/view-engine-php/src",
-            "Helix\\View\\Engine\\Twig\\": "libs/view-engine-twig/src"
+            "Helix\\View\\": "libs/view/src"
         }
     },
     "require-dev": {
@@ -112,6 +111,10 @@
         "psr-4": {
             "App\\Tests\\": "tests",
             "Helix\\Boot\\Tests\\": "libs/boot/tests",
+            "Helix\\Bridge\\Cache\\Tests\\": "libs/bridge/cache/tests",
+            "Helix\\Bridge\\Doctrine\\Tests\\": "libs/bridge/doctrine/tests",
+            "Helix\\Bridge\\Monolog\\Tests\\": "libs/bridge/monolog/tests",
+            "Helix\\Bridge\\Twig\\Tests\\": "libs/bridge/twig/tests",
             "Helix\\Clock\\Tests\\": "libs/clock/tests",
             "Helix\\Config\\Tests\\": "libs/config/tests",
             "Helix\\Container\\Tests\\": "libs/container/tests",
@@ -135,8 +138,6 @@
             "Helix\\Server\\Tests\\": "libs/server/tests",
             "Helix\\Session\\Http\\Tests\\": "libs/session-http/tests",
             "Helix\\Session\\Tests\\": "libs/session/tests",
-            "Helix\\View\\Engine\\Php\\Tests\\": "libs/view-engine-php/tests",
-            "Helix\\View\\Engine\\Twig\\Tests\\": "libs/view-engine-twig/tests",
             "Helix\\View\\Tests\\": "libs/view/tests"
         }
     },
@@ -181,10 +182,9 @@
         "helix/server-sapi": "self.version",
         "helix/session": "self.version",
         "helix/session-http": "self.version",
+        "helix/twig-bridge": "self.version",
         "helix/view": "self.version",
-        "helix/view-contracts": "self.version",
-        "helix/view-engine-php": "self.version",
-        "helix/view-engine-twig": "self.version"
+        "helix/view-contracts": "self.version"
     },
     "extra": {
         "branch-alias": {
@@ -194,6 +194,8 @@
     },
     "config": {
         "sort-packages": true,
+        "platform-check": true,
+        "optimize-autoloader": true,
         "allow-plugins": {
             "composer/package-versions-deprecated": true
         }
