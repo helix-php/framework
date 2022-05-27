@@ -11,22 +11,21 @@ declare(strict_types=1);
 
 namespace Helix\EventDispatcher;
 
-use Helix\Contracts\EventDispatcher\EventInterface;
 use Helix\Contracts\EventDispatcher\EventSubscriptionInterface;
 use Helix\Contracts\EventDispatcher\ListenerInterface;
 use Ramsey\Uuid\Uuid;
 
 /**
- * @template T of EventInterface
- * @template-implements EventSubscriptionInterface<T>
- * @see EventInterface
+ * @template TEvent of object
+ *
+ * @template-implements EventSubscriptionInterface<TEvent>
  */
 final class Subscription implements EventSubscriptionInterface
 {
     /**
-     * @var \Closure
+     * @var \Closure(TEvent, self): void
      */
-    private \Closure $handler;
+    private readonly \Closure $handler;
 
     /**
      * @var string|null
@@ -40,10 +39,13 @@ final class Subscription implements EventSubscriptionInterface
 
     /**
      * @param ListenerInterface $listener
-     * @param callable $handler
+     * @param callable(TEvent,EventSubscriptionInterface<TEvent>|null):void $handler
      */
-    public function __construct(private ListenerInterface $listener, callable $handler)
-    {
+    public function __construct(
+        private readonly ListenerInterface $listener,
+        callable $handler
+    ) {
+        /** @psalm-suppress MixedPropertyTypeCoercion */
         $this->handler = $handler(...);
     }
 
@@ -58,11 +60,13 @@ final class Subscription implements EventSubscriptionInterface
     /**
      * {@inheritDoc}
      */
-    public function dispatch(object $event): void
+    public function dispatch(object $event): object
     {
         ++$this->executions;
 
         ($this->handler)($event, $this);
+
+        return $event;
     }
 
     /**

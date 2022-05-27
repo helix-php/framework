@@ -18,25 +18,83 @@ use Helix\EventDispatcher\Exception\ListenerSignatureException;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
 /**
- * @template T of object
- * @template-implements ListenerInterface<T>
  * @template-implements \IteratorAggregate<EventSubscriptionInterface>
  */
-final class Listener implements ListenerInterface, ListenerProviderInterface, \IteratorAggregate, \Countable
+final class Listener implements
+    ListenerInterface,
+    ListenerProviderInterface,
+    \IteratorAggregate,
+    \Countable
 {
     /**
-     * @var array<class-string<object>, array<EventSubscriptionInterface>>
+     * @var array<class-string, array<EventSubscriptionInterface>>
      */
     private array $subscriptions = [];
 
     /**
-     * @var array<string, class-string<object>>
+     * @var array<string, class-string>
      */
     private array $index = [];
 
     /**
-     * @param callable(T, ?EventSubscriptionInterface<T>): void $handler
-     * @return class-string<T>
+     * {@inheritDoc}
+     *
+     * @throws ListenerException
+     * @psalm-suppress InvalidReturnType
+     */
+    public function listen(
+        callable|string $handlerOrEventClass,
+        ?callable $handler = null,
+    ): Subscription {
+        if ($handler === null) {
+            if (\is_string($handlerOrEventClass)) {
+                throw new \InvalidArgumentException(
+                    'First argument must be a valid event handler',
+                );
+            }
+
+            /** @psalm-suppress all */
+            return $this->byHandler($handlerOrEventClass);
+        }
+
+        /** @psalm-suppress all */
+        return $this->byType($handlerOrEventClass, $handler);
+    }
+
+    /**
+     * @template TEvent of object
+     *
+     * @param callable(TEvent,EventSubscriptionInterface<TEvent>|null):void $handler
+     * @return Subscription<TEvent>
+     * @throws ListenerException
+     */
+    private function byHandler(callable $handler): Subscription
+    {
+        return $this->byType($this->getType($handler), $handler);
+    }
+
+    /**
+     * @template TEvent of object
+     *
+     * @param class-string<TEvent> $event
+     * @param callable(TEvent,EventSubscriptionInterface<TEvent>|null):void $handler
+     * @return Subscription<TEvent>
+     */
+    private function byType(string $event, callable $handler): Subscription
+    {
+        $subscription = new Subscription($this, $handler);
+
+        $this->subscriptions[$event][] = $subscription;
+        $this->index[$subscription->getId()] = $event;
+
+        return $subscription;
+    }
+
+    /**
+     * @template TEvent of object
+     *
+     * @param callable(TEvent,EventSubscriptionInterface<TEvent>|null):void $handler
+     * @return class-string<TEvent>
      * @throws ListenerException
      */
     private function getType(callable $handler): string
@@ -74,59 +132,6 @@ final class Listener implements ListenerInterface, ListenerProviderInterface, \I
         }
 
         return $type->getName();
-    }
-
-    /**
-     * {@inheritDoc}
-     * @throws ListenerException
-     * @psalm-suppress InvalidReturnStatement
-     */
-    public function listen(callable|string $handlerOrEventClass, ?callable $handler = null): Subscription
-    {
-        if ($handler === null) {
-            return $this->on($this->getType($handlerOrEventClass), $handlerOrEventClass);
-        }
-
-        if (!\is_string($handlerOrEventClass)) {
-            throw new \InvalidArgumentException('First argument must be a class string');
-        }
-
-        return $this->on($handlerOrEventClass, $handler);
-    }
-
-    /**
-     * @template TClass of class-string<T>
-     * @param TClass $event
-     * @param callable(T, ?EventSubscriptionInterface<T>): void $handler
-     * @return Subscription
-     */
-    public function on(string $event, callable $handler): Subscription
-    {
-        $subscription = new Subscription($this, $handler);
-
-        $this->subscriptions[$event][] = $subscription;
-        $this->index[$subscription->getId()] = $event;
-
-        return $subscription;
-    }
-
-    /**
-     * @template TClass of class-string<T>
-     * @param TClass $event
-     * @param callable(T, ?EventSubscriptionInterface<T>): void $handler
-     * @return Subscription
-     * @psalm-suppress InvalidArgument
-     * @psalm-suppress MixedArgumentTypeCoercion
-     */
-    public function once(string $event, callable $handler): Subscription
-    {
-        $decorator = static function (object $e, EventSubscriptionInterface $ctx) use ($handler): void {
-            $handler($e, $ctx);
-
-            $ctx->cancel();
-        };
-
-        return $this->on($event, $decorator);
     }
 
     /**

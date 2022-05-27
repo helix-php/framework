@@ -15,10 +15,6 @@ use Helix\Contracts\EventDispatcher\DispatcherInterface;
 use Helix\Contracts\EventDispatcher\EventSubscriptionInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
-/**
- * @template T of object
- * @template-implements DispatcherInterface<T>
- */
 final class Dispatcher implements DispatcherInterface
 {
     /**
@@ -32,12 +28,9 @@ final class Dispatcher implements DispatcherInterface
     }
 
     /**
-     * @param T $event
-     * @return void
-     * @psalm-suppress MoreSpecificImplementedParamType
-     * @psalm-suppress ImplementedReturnTypeMismatch
+     * {@inheritDoc}
      */
-    public function dispatch(object $event): void
+    public function dispatch(object $event): object
     {
         /** @var EventSubscriptionInterface $subscription */
         foreach ($this->provider->getListenersForEvent($event) as $subscription) {
@@ -45,5 +38,7 @@ final class Dispatcher implements DispatcherInterface
         }
 
         $this->parent?->dispatch($event);
+
+        return $event;
     }
 }
