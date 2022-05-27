@@ -11,49 +11,46 @@ declare(strict_types=1);
 
 namespace Helix\Contracts\ParamResolver;
 
-use Helix\ParamResolver\Exception\ParamNotResolvableException;
-use Helix\ParamResolver\Exception\SignatureException;
-use Helix\ParamResolver\Reader\ReaderInterface;
+use Helix\Contracts\ParamResolver\Exception\ResolvingExceptionInterface;
+use Helix\Contracts\ParamResolver\Exception\SignatureExceptionInterface;
 
 /**
- * @psalm-type ResolversList = iterable<array-key, ValueResolverInterface>
- *
- * @template-implements ReaderInterface<mixed>
+ * @psalm-type ValueResolversList = iterable<ValueResolverInterface>
  */
-interface ParamResolverInterface extends ReaderInterface
+interface ResolverInterface
 {
     /**
      * @param callable-string $name
-     * @param ResolversList $resolvers
+     * @param ValueResolversList $resolvers
      * @return iterable
-     * @throws ParamNotResolvableException
-     * @throws SignatureException
+     * @throws ResolvingExceptionInterface
+     * @throws SignatureExceptionInterface
      */
     public function fromFunction(string $name, iterable $resolvers = []): iterable;
 
     /**
      * @param class-string|object $class
      * @param non-empty-string $name
-     * @param ResolversList $resolvers
+     * @param ValueResolversList $resolvers
      * @return iterable
-     * @throws ParamNotResolvableException
-     * @throws SignatureException
+     * @throws ResolvingExceptionInterface
+     * @throws SignatureExceptionInterface
      */
     public function fromMethod(string|object $class, string $name, iterable $resolvers = []): iterable;
 
     /**
      * @param \Closure $closure
-     * @param ResolversList $resolvers
+     * @param ValueResolversList $resolvers
      * @return iterable
      */
     public function fromClosure(\Closure $closure, iterable $resolvers = []): iterable;
 
     /**
      * @param callable $callable
-     * @param ResolversList $resolvers
+     * @param ValueResolversList $resolvers
      * @return iterable
-     * @throws ParamNotResolvableException
-     * @throws SignatureException
+     * @throws ResolvingExceptionInterface
+     * @throws SignatureExceptionInterface
      */
     public function fromCallable(callable $callable, iterable $resolvers = []): iterable;
 }
