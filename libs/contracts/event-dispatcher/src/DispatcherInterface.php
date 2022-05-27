@@ -13,15 +13,16 @@ namespace Helix\Contracts\EventDispatcher;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-/**
- * @template T of object
- */
 interface DispatcherInterface extends EventDispatcherInterface
 {
     /**
-     * @param T $event
+     * @template TEvent of object
+     *
+     * @param TEvent $event
+     * @return TEvent
+     *
      * @psalm-suppress MoreSpecificImplementedParamType
      * @psalm-suppress ImplementedReturnTypeMismatch
      */
-    public function dispatch(object $event): void;
+    public function dispatch(object $event): object;
 }

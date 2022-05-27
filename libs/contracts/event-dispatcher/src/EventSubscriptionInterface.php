@@ -12,10 +12,11 @@ declare(strict_types=1);
 namespace Helix\Contracts\EventDispatcher;
 
 /**
- * @template T of object
- * @template-extends DispatcherInterface<T>
+ * @template TEvent of object
+ *
+ * @template-extends DispatcherInterface<TEvent>
  */
-interface EventSubscriptionInterface extends DispatcherInterface, \Stringable
+interface EventSubscriptionInterface extends \Stringable
 {
     /**
      * @return non-empty-string|int
@@ -31,4 +32,12 @@ interface EventSubscriptionInterface extends DispatcherInterface, \Stringable
      * @return void
      */
     public function cancel(): void;
+
+    /**
+     * @template TEvent of object
+     *
+     * @param TEvent $event
+     * @return TEvent
+     */
+    public function __invoke(object $event): object;
 }

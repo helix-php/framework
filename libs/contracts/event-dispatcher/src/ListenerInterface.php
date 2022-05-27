@@ -11,13 +11,6 @@ declare(strict_types=1);
 
 namespace Helix\Contracts\EventDispatcher;
 
-/**
- * @template T of EventInterface
- * @see EventInterface
- *
- * @psalm-type SubscribableEventListener = callable(T, EventSubscriptionInterface|null):void
- * @psalm-type EventListener = callable(T):void
- */
 interface ListenerInterface
 {
     /**
@@ -33,15 +26,18 @@ interface ListenerInterface
      * });
      * ```
      *
-     * @param EventListener|SubscribableEventListener|class-string<T> $handlerOrEventClass
-     * @param EventListener|SubscribableEventListener|null $handler
-     * @return EventSubscriptionInterface
-     * @throws \Throwable
+     * @template TEvent of object
+     *
+     * @param class-string<TEvent>|callable(TEvent,EventSubscriptionInterface<TEvent>|null):void $handlerOrEventClass
+     * @param null|callable(TEvent,EventSubscriptionInterface<TEvent>|null):void $handler
+     * @return EventSubscriptionInterface<TEvent>
      */
     public function listen(callable|string $handlerOrEventClass, ?callable $handler = null): EventSubscriptionInterface;
 
     /**
-     * @param EventSubscriptionInterface<T>|\Stringable|string $subscription
+     * @template TEvent of object
+     *
+     * @param EventSubscriptionInterface<TEvent>|\Stringable|string $subscription
      * @return void
      */
     public function cancel(EventSubscriptionInterface|\Stringable|string $subscription): void;
