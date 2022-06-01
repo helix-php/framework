@@ -12,13 +12,14 @@ declare(strict_types=1);
 namespace Helix\Container\Definition;
 
 /**
- * @template TDefinition of object
- * @template-extends Definition<TDefinition>
+ * @template TService of object
+ *
+ * @template-extends Definition<TService>
  */
 class InstanceDefinition extends Definition
 {
     /**
-     * @param TDefinition $instance
+     * @param TService $instance
      */
     public function __construct(
         private readonly object $instance,

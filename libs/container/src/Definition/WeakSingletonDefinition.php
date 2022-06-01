@@ -12,13 +12,14 @@ declare(strict_types=1);
 namespace Helix\Container\Definition;
 
 /**
- * @template TDefinition of object
- * @template-extends LazyDefinition<TDefinition>
+ * @template TService of object
+ *
+ * @template-extends LazyDefinition<TService>
  */
 class WeakSingletonDefinition extends LazyDefinition
 {
     /**
-     * @var \WeakReference<TDefinition>|null
+     * @var \WeakReference<TService>|null
      */
     protected ?\WeakReference $ref = null;
 

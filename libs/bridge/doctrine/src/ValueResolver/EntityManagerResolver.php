@@ -12,13 +12,13 @@ declare(strict_types=1);
 namespace Helix\Bridge\Doctrine\ValueResolver;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Helix\ParamResolver\Parameter;
+use Helix\ParamInfo\Type;
 
 /**
  * @template TReference of object
- * @template-extends PoolResolver<TReference>
+ * @template-extends PoolMiddleware<TReference>
  */
-class EntityManagerResolver extends PoolResolver
+class EntityManagerResolver extends PoolMiddleware
 {
     /**
      * @param \ReflectionParameter $parameter
@@ -26,7 +26,7 @@ class EntityManagerResolver extends PoolResolver
      */
     public function supports(\ReflectionParameter $parameter): bool
     {
-        return Parameter::of($parameter)->type
+        return Type::fromParameter($parameter)
             ->allowsSubclassOf(EntityManagerInterface::class);
     }
 

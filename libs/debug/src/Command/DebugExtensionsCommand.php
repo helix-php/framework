@@ -12,9 +12,11 @@ declare(strict_types=1);
 namespace Helix\Debug\Command;
 
 use Helix\Boot\Attribute\Execution;
+use Helix\Boot\Attribute\ServiceDefinition;
 use Helix\Boot\ExtensionInterface;
 use Helix\Boot\RepositoryInterface;
 use Helix\Foundation\Console\Command;
+use Helix\Foundation\Console\Helper\TreeItem;
 use SebastianBergmann\Environment\Console;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -25,46 +27,67 @@ final class DebugExtensionsCommand extends Command
 
     /**
      * @param RepositoryInterface $extensions
-     * @return int
+     * @return void
      * @throws \ReflectionException
      */
-    public function invoke(RepositoryInterface $extensions): int
+    public function invoke(RepositoryInterface $extensions): void
     {
-        foreach ($extensions->getExtensions() as $i => $extension) {
-            $context = $extension->getContext();
-            $extensionShortClassName = (new \ReflectionObject($context))->getShortName();
-
-            if ($i !== 0) {
-                $this->separator();
-            }
-
-            $this->output->writeln('');
-
+        foreach ($extensions->getExtensions() as $extension) {
             $this->item($this->getExtNameString($extension), $this->getExtVersionString($extension));
+
             if ($description = $this->getExtDescriptionString($extension)) {
-                $this->output->writeln($description);
+                $this->description($description);
             }
 
             $count = \iterator_count($extension->getMethodMetadata());
-            $current = 0;
+            $item = 0;
 
             /** @var \ReflectionMethod $method */
             foreach ($extension->getMethodMetadata() as $method => $meta) {
-                $metadataShortClassName = (new \ReflectionClass($meta))->getShortName();
+                $location = ++$item < $count ? TreeItem\Location::MIDDLE : TreeItem\Location::LAST;
 
-                $color = $meta instanceof Execution ? 'blue' : 'yellow';
-                $type = $this->getChildItemPrefixString(++$current, $count);
+                $tree = new TreeItem(
+                    title: $this->getMetaNameString($meta),
+                    suffix: $this->getMetaMethodString($method),
+                    location: $location,
+                );
 
-                $prefix = "{$type} <fg=$color>#[$metadataShortClassName]</>";
-                $suffix = \sprintf('%s::%s()', $extensionShortClassName, $method->getName());
+                if ($meta instanceof ServiceDefinition) {
+                    foreach ([$meta->id, ...$meta->aliases] as $alias) {
+                        $tree->addChild((new TreeItem($alias))->withoutSeparator());
+                    }
+                }
 
-                $this->item($prefix, $suffix, ' ');
+                $tree->render($this->output);
             }
 
-            $this->output->writeln('');
+            $this->eol();
         }
+    }
 
-        return self::SUCCESS;
+    /**
+     * @param object $meta
+     * @return non-empty-string
+     */
+    private function getMetaNameString(object $meta): string
+    {
+        $name = (new \ReflectionClass($meta))->getShortName();
+
+        $color = $meta instanceof Execution ? 'blue' : 'yellow';
+
+        return "<fg=$color>#[$name]</>";
+    }
+
+    /**
+     * @param \ReflectionMethod $method
+     * @return string
+     */
+    private function getMetaMethodString(\ReflectionMethod $method): string
+    {
+        return \vsprintf('<fg=gray>%s</><comment>%s</comment><fg=gray>()</>', [
+            $method->isStatic() ? '::' : '->',
+            $method->getName(),
+        ]);
     }
 
     /**

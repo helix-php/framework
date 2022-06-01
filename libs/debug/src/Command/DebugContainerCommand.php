@@ -13,8 +13,8 @@ namespace Helix\Debug\Command;
 
 use Helix\Container\Definition\Definition;
 use Helix\Container\Definition\LazyDefinition;
-use Helix\Contracts\Container\DefinitionInterface;
-use Helix\Contracts\Container\RepositoryInterface;
+use Helix\Container\Definition\DefinitionInterface;
+use Helix\Container\Definition\Repository\RepositoryInterface;
 use Helix\Foundation\Console\Command;
 
 final class DebugContainerCommand extends Command

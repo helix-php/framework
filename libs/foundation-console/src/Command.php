@@ -12,7 +12,9 @@ declare(strict_types=1);
 namespace Helix\Foundation\Console;
 
 use Helix\Contracts\Container\DispatcherInterface;
-use SebastianBergmann\Environment\Console;
+use Helix\Foundation\Console\Command\Info;
+use Helix\Foundation\Console\Command\InteractsWithInputTrait;
+use Helix\Foundation\Console\Command\InteractsWithOutputTrait;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,10 +24,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 abstract class Command extends SymfonyCommand
 {
-    /**
-     * @var positive-int
-     */
-    protected const DEFAULT_CONSOLE_SIZE = 80;
+    use InteractsWithInputTrait;
+    use InteractsWithOutputTrait;
 
     /**
      * @var InputInterface
@@ -38,14 +38,37 @@ abstract class Command extends SymfonyCommand
     protected readonly OutputInterface $output;
 
     /**
+     * The console command name.
+     *
      * @var non-empty-string
      */
     protected string $name = '';
 
     /**
-     * @var non-empty-string
+     * The console command description.
+     *
+     * @var string
      */
     protected string $description = '';
+
+    /**
+     * The console command help text.
+     *
+     * @var string
+     */
+    protected string $help = '';
+
+    /**
+     * Indicates whether the command should be shown in the commands list.
+     *
+     * @var bool
+     */
+    protected bool $hidden = false;
+
+    /**
+     * @var Info
+     */
+    private readonly Info $info;
 
     /**
      * @param DispatcherInterface $dispatcher
@@ -54,6 +77,32 @@ abstract class Command extends SymfonyCommand
         private readonly DispatcherInterface $dispatcher,
     ) {
         parent::__construct();
+
+        $this->info = new Info();
+    }
+
+    /**
+     * @return InputInterface
+     */
+    protected function getInput(): InputInterface
+    {
+        return $this->input;
+    }
+
+    /**
+     * @return OutputInterface
+     */
+    protected function getOutput(): OutputInterface
+    {
+        return $this->output;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getSize(): int
+    {
+        return $this->info->getSize();
     }
 
     /**
@@ -67,7 +116,9 @@ abstract class Command extends SymfonyCommand
         $this->output = $output;
 
         if (!\method_exists($this, 'invoke')) {
-            throw new \BadFunctionCallException('You must define the invoke() method in the concrete command class.');
+            throw new \BadFunctionCallException(
+                'You must define the invoke() method in the concrete command class.'
+            );
         }
 
         $this->dispatcher->call($this->invoke(...));
@@ -82,87 +133,7 @@ abstract class Command extends SymfonyCommand
     {
         $this->setName($this->name);
         $this->setDescription($this->description);
-    }
-
-    /**
-     * @return positive-int
-     */
-    protected function getConsoleWidth(): int
-    {
-        if (\class_exists(Console::class)) {
-            return (new Console())->getNumberOfColumns();
-        }
-
-        return static::DEFAULT_CONSOLE_SIZE;
-    }
-
-    /**
-     * @param array<non-empty-string> $messages
-     * @param string $char
-     * @return void
-     */
-    protected function separator(array $messages = [], string $char = '─'): void
-    {
-        $this->output->writeln($this->getLineSeparatorString($messages, $char));
-    }
-
-    /**
-     * @param string $prefix
-     * @param string $suffix
-     * @param non-empty-string $char
-     * @return void
-     */
-    protected function item(string $prefix = '', string $suffix = '', string $char = '┄'): void
-    {
-        [$prefix, $suffix] = [\rtrim($prefix) . ' ', ' ' . \ltrim($suffix)];
-
-        $separator = $this->getLineSeparatorString([$prefix, $suffix], $char);
-
-        $this->output->writeln($prefix . $separator . $suffix);
-    }
-
-    /**
-     * @param int $current
-     * @param int $max
-     * @return string
-     */
-    protected function getChildItemPrefixString(int $current, int $max): string
-    {
-        $type = $max <= $current ? '└' : '├';
-
-        return " <fg=gray>{$type}┄</>";
-    }
-
-    /**
-     * @param int $current
-     * @param int $max
-     * @param string $message
-     * @return void
-     */
-    protected function child(int $current, int $max, string $message = ''): void
-    {
-        $prefix = $this->getChildItemPrefixString($current, $max);
-
-        $this->output->writeln("{$prefix} {$message}");
-    }
-
-    /**
-     * @param array<non-empty-string> $messages
-     * @param non-empty-string $char
-     * @return non-empty-string
-     */
-    protected function getLineSeparatorString(array $messages = [], string $char = '┄'): string
-    {
-        $size = $full = $this->getConsoleWidth();
-
-        foreach ($messages as $message) {
-            $size -= \mb_strlen(\strip_tags($message));
-        }
-
-        if ($size < 0) {
-            $size = $full;
-        }
-
-        return \sprintf('<fg=gray>%s</>', \str_repeat($char, $size));
+        $this->setHelp($this->help);
+        $this->setHidden($this->hidden);
     }
 }

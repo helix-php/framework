@@ -12,14 +12,14 @@ declare(strict_types=1);
 namespace Helix\Bridge\Doctrine\ValueResolver;
 
 use Doctrine\Persistence\ObjectRepository;
+use Helix\ParamInfo\Type;
 use Helix\ParamResolver\Exception\ParamNotResolvableException;
-use Helix\ParamResolver\Parameter;
 
 /**
  * @template TReference of object
- * @template-extends PoolResolver<TReference>
+ * @template-extends PoolMiddleware<TReference>
  */
-class RepositoryResolver extends PoolResolver
+class RepositoryResolver extends PoolMiddleware
 {
     /**
      * This list contains the interfaces of the repositories and the entity
@@ -46,7 +46,7 @@ class RepositoryResolver extends PoolResolver
      */
     public function supports(\ReflectionParameter $parameter): bool
     {
-        return Parameter::of($parameter)->type
+        return Type::fromParameter($parameter)
             ->allowsSubclassOf(ObjectRepository::class);
     }
 
@@ -65,10 +65,10 @@ class RepositoryResolver extends PoolResolver
      */
     public function resolve(\ReflectionParameter $parameter): ObjectRepository
     {
-        $info = Parameter::of($parameter);
+        $type = Type::fromParameter($parameter);
 
         foreach ($this->getRepositories() as $interface => $entity) {
-            if ($info->type->allowsSubclassOf($interface)) {
+            if ($type->allowsSubclassOf($interface)) {
                 $em = $this->getEntityManagerByParameter($parameter);
 
                 return $em->getRepository($entity);

@@ -14,7 +14,6 @@ namespace Helix\EventDispatcher;
 use Helix\Contracts\EventDispatcher\DispatcherInterface;
 use Helix\Contracts\EventDispatcher\EventSubscriptionInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
-use Psr\EventDispatcher\StoppableEventInterface;
 
 final class Dispatcher implements DispatcherInterface
 {
@@ -35,16 +34,10 @@ final class Dispatcher implements DispatcherInterface
     {
         /** @var EventSubscriptionInterface $subscription */
         foreach ($this->provider->getListenersForEvent($event) as $subscription) {
-            if ($event instanceof StoppableEventInterface && $event->isPropagationStopped()) {
-                return $event;
-            }
-
-            $event = $subscription->dispatch($event);
+            $subscription->dispatch($event);
         }
 
-        if (isset($this->parent)) {
-            return $this->parent->dispatch($event);
-        }
+        $this->parent?->dispatch($event);
 
         return $event;
     }

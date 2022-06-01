@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Helix\Container\Event;
 
-use Helix\Contracts\Container\DefinitionInterface;
+use Helix\Container\Definition\DefinitionInterface;
 
 /**
  * @template T of object

@@ -9,7 +9,7 @@
         "helix/router-generator": "^1.0",
         "helix/http-method": "^1.0",
         "helix/http-status-code": "^1.0",
-        "helix/middleware-contracts": "^1.0",
+        "helix/http-middleware-contracts": "^1.0",
         "helix/router-contracts": "^1.0"
     },
     "autoload": {

@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Helix\Contracts\Container;
 
-use Helix\Contracts\ParamResolver\ValueResolverInterface;
+use Helix\Contracts\ParamResolver\MiddlewareInterface;
 
 interface InstantiatorInterface
 {
@@ -21,7 +21,7 @@ interface InstantiatorInterface
      * @template TService of object
      *
      * @param non-empty-string|class-string<TService> $id
-     * @param iterable<ValueResolverInterface|class-string<ValueResolverInterface>> $resolvers
+     * @param iterable<MiddlewareInterface|class-string<MiddlewareInterface>> $resolvers
      * @return TService
      */
     public function make(string $id, iterable $resolvers = []): object;

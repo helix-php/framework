@@ -31,9 +31,20 @@ class ServiceNotFoundException extends ServiceNotResolvableException implements 
     }
 
     /**
+     * @param non-empty-string $service
+     * @return self
+     */
+    public static function fromName(string $service): self
+    {
+        $message = 'Service [%s] has not been registered';
+
+        return new self($service, \sprintf($message, $service));
+    }
+
+    /**
      * @return non-empty-string
      */
-    public function getServiceId(): string
+    public function getId(): string
     {
         return $this->service;
     }

@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Helix\Contracts\ParamResolver\Exception;
 
 /**
- * General exception that occurs when errors occur during
+ * An exception interface that is thrown on any errors during
  * parameter resolution.
  */
 interface ParamResolverExceptionInterface extends \Throwable

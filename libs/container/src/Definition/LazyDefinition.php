@@ -13,30 +13,28 @@ namespace Helix\Container\Definition;
 
 use Helix\Container\Event\Resolved;
 use Helix\Container\Event\Resolving;
-use Helix\Contracts\EventDispatcher\ListenerInterface;
 use Helix\Contracts\EventDispatcher\DispatcherInterface;
 use Helix\EventDispatcher\Dispatcher;
-use Helix\EventDispatcher\Exception\ListenerException;
 use Helix\EventDispatcher\Listener;
+use Helix\EventDispatcher\ListenerAwareTrait;
 
 /**
- * @template TDefinition of object
- * @template-extends Definition<TDefinition>
+ * @template TService of object
+ *
+ * @template-extends Definition<TService>
+ * @template-implements SubscribableDefinitionInterface<TService>
  */
-abstract class LazyDefinition extends Definition
+abstract class LazyDefinition extends Definition implements SubscribableDefinitionInterface
 {
+    use ListenerAwareTrait;
+
     /**
      * @var DispatcherInterface
      */
     private readonly DispatcherInterface $dispatcher;
 
     /**
-     * @var ListenerInterface
-     */
-    private readonly ListenerInterface $listener;
-
-    /**
-     * @param \Closure():TDefinition $initializer
+     * @param \Closure():TService $initializer
      * @param DispatcherInterface|null $parent
      */
     public function __construct(
@@ -48,40 +46,18 @@ abstract class LazyDefinition extends Definition
     }
 
     /**
-     * @return TDefinition
+     * @return TService
      */
     protected function initialize(): object
     {
         $this->dispatcher->dispatch(new Resolving($this));
 
+        $result = ($this->initializer)();
+
         try {
-            return $result = ($this->initializer)();
+            return $result;
         } finally {
-            if (isset($result)) {
-                $this->dispatcher->dispatch(new Resolved($this, $result));
-            }
+            $this->dispatcher->dispatch(new Resolved($this, $result));
         }
-    }
-
-    /**
-     * @param callable(Resolving):void $handler
-     * @return void
-     * @throws ListenerException
-     * @throws \Throwable
-     */
-    public function onResolving(callable $handler): void
-    {
-        $this->listener->listen(Resolving::class, $handler);
-    }
-
-    /**
-     * @param callable(Resolving):void $handler
-     * @return void
-     * @throws ListenerException
-     * @throws \Throwable
-     */
-    public function onResolved(callable $handler): void
-    {
-        $this->listener->listen(Resolved::class, $handler);
     }
 }

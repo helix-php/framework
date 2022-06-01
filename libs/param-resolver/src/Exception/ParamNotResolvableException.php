@@ -11,7 +11,11 @@ declare(strict_types=1);
 
 namespace Helix\ParamResolver\Exception;
 
-class ParamNotResolvableException extends ParamResolverException
+use Helix\Contracts\ParamResolver\Exception\NotResolvableExceptionInterface;
+use Helix\ParamResolver\Parameter\Printer;
+
+class ParamNotResolvableException extends ParamResolverException implements
+    NotResolvableExceptionInterface
 {
     /**
      * @param \ReflectionParameter $parameter
@@ -31,8 +35,23 @@ class ParamNotResolvableException extends ParamResolverException
     /**
      * @return \ReflectionParameter
      */
-    public function getParameter(): \ReflectionParameter
+    public function getReflectionParameter(): \ReflectionParameter
     {
         return $this->parameter;
+    }
+
+    /**
+     * @param \ReflectionParameter $parameter
+     * @return static
+     */
+    public static function fromReflectionParameter(\ReflectionParameter $parameter): self
+    {
+        $message = \vsprintf('Could not resolve parameter #%d of the %s(%s)', [
+            $parameter->getPosition(),
+            Printer::printParameterContext($parameter),
+            Printer::printParameter($parameter),
+        ]);
+
+        return new self($parameter, $message);
     }
 }

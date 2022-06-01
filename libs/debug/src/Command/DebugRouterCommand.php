@@ -14,6 +14,7 @@ namespace Helix\Debug\Command;
 use Helix\Contracts\Router\RepositoryInterface;
 use Helix\Contracts\Router\RouteInterface;
 use Helix\Foundation\Console\Command;
+use Helix\Foundation\Console\Helper\TreeItem;
 use SebastianBergmann\Environment\Console;
 
 final class DebugRouterCommand extends Command
@@ -23,31 +24,31 @@ final class DebugRouterCommand extends Command
 
     /**
      * @param RepositoryInterface $routes
-     * @return int
+     * @return void
      */
-    public function invoke(RepositoryInterface $routes): int
+    public function invoke(RepositoryInterface $routes): void
     {
         $methodSize = $this->getMaxMethodSize($routes);
 
         foreach ($routes as $route) {
-            $prefix = $this->getFormattedRouteMethod($route, $methodSize);
-            $prefix .= $this->getFormattedRoutePath($route);
-            $suffix = $this->getFormattedRouteHandler($route);
+            $prefix = $this->getRouteMethodString($route, $methodSize);
+            $prefix .= $this->getRoutePathString($route);
+            $suffix = $this->getRouteHandlerString($route);
 
-            $this->item($prefix, $suffix);
-
-            $count = \count($route->getParameters());
-            $current = 0;
+            $tree = $this->tree($prefix, $suffix);
 
             foreach ($route->getParameters() as $parameter => $value) {
                 $prefix = "<fg=yellow>$parameter</>";
                 $suffix = "<fg=gray>/</><fg=blue>$value</><fg=gray>/</>";
 
-                $this->child(++$current, $count, $prefix . ' = ' . $suffix);
+                $tree->addChild(
+                    (new TreeItem($prefix . ' <fg=gray>=</> ' . $suffix))
+                        ->withoutSeparator()
+                );
             }
-        }
 
-        return self::SUCCESS;
+            $tree->render($this->output);
+        }
     }
 
     /**
@@ -71,7 +72,7 @@ final class DebugRouterCommand extends Command
      * @param RouteInterface $route
      * @return non-empty-string
      */
-    private function getFormattedRouteHandler(RouteInterface $route): string
+    private function getRouteHandlerString(RouteInterface $route): string
     {
         $handler = $route->getHandler();
 
@@ -87,7 +88,7 @@ final class DebugRouterCommand extends Command
      * @param int $size
      * @return non-empty-string
      */
-    private function getFormattedRouteMethod(RouteInterface $route, int $size): string
+    private function getRouteMethodString(RouteInterface $route, int $size): string
     {
         $method = $route->getMethod();
         $color = $method->isIdempotent() ? 'green' : 'red';
@@ -99,23 +100,11 @@ final class DebugRouterCommand extends Command
      * @param RouteInterface $route
      * @return non-empty-string
      */
-    private function getFormattedRoutePath(RouteInterface $route): string
+    private function getRoutePathString(RouteInterface $route): string
     {
         $path = $route->getPath();
         $path = \preg_replace('/\{.+?}/', '<fg=yellow;options=bold>$0</>', $path);
 
         return \sprintf('<options=bold>%s</> ', $path);
-    }
-
-    /**
-     * @return int
-     */
-    private function getConsoleMaxSize(): int
-    {
-        if (\class_exists(Console::class)) {
-            return (new Console())->getNumberOfColumns();
-        }
-
-        return 80;
     }
 }

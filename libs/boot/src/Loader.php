@@ -14,9 +14,11 @@ namespace Helix\Boot;
 use Helix\Boot\Attribute\Execution;
 use Helix\Boot\Attribute\Register;
 use Helix\Boot\Attribute\ServiceDefinition;
-use Helix\Container\Container;
 use Helix\Container\Exception\RegistrationException;
-use Helix\Contracts\Container\DefinitionInterface;
+use Helix\Container\Definition\DefinitionInterface;
+use Helix\Contracts\Container\DispatcherInterface;
+use Helix\Container\Definition\Repository\RegistrarInterface;
+use Helix\Contracts\EventDispatcher\DispatcherInterface as EventDispatcherInterface;
 
 class Loader implements RepositoryInterface, LoaderInterface
 {
@@ -47,10 +49,14 @@ class Loader implements RepositoryInterface, LoaderInterface
     private array $registrable = [];
 
     /**
-     * @param Container $container
+     * @param RegistrarInterface $registrar
+     * @param DispatcherInterface $dispatcher
+     * @param EventDispatcherInterface $events
      */
     public function __construct(
-        private readonly Container $container,
+        private readonly RegistrarInterface $registrar,
+        private readonly DispatcherInterface $dispatcher,
+        private readonly EventDispatcherInterface $events,
     ) {
     }
 
@@ -64,7 +70,7 @@ class Loader implements RepositoryInterface, LoaderInterface
 
         foreach ($this->lookupDefinitions($loaded) as $attr => $definition) {
             /** @psalm-suppress PossiblyNullArgument */
-            $registrar = $this->container->define($attr->id, $definition);
+            $registrar = $this->registrar->define($attr->id, $definition);
 
             if ($attr->aliases !== []) {
                 $registrar->as(...$attr->aliases);
@@ -87,8 +93,8 @@ class Loader implements RepositoryInterface, LoaderInterface
             /** @var Execution $attr */
             [$attr, $action] = \array_shift($this->registrable);
 
-            if ($attr->shouldLoad($this->container)) {
-                $this->container->call($action);
+            if ($attr->shouldLoad($this->registrar)) {
+                $this->dispatcher->call($action);
             }
         }
     }
@@ -113,13 +119,15 @@ class Loader implements RepositoryInterface, LoaderInterface
          * @var ServiceDefinition $attribute
          */
         foreach ($provider->getMethodMetadata(ServiceDefinition::class) as $method => $attribute) {
-            $declarator = $method->getClosure(
-                $provider->getContext()
+            $instantiator = fn () => $this->dispatcher->call(
+                $method->getClosure(
+                    $provider->getContext()
+                )
             );
 
             $attribute->id ??= $this->getIdFromMethodDefinition($method);
 
-            yield $attribute => $attribute->create($attribute->id, $this->container, $declarator);
+            yield $attribute => $attribute->create($attribute->id, $this->events, $instantiator);
         }
     }
 
@@ -129,6 +137,10 @@ class Loader implements RepositoryInterface, LoaderInterface
      */
     private function lookupRegistrars(ExtensionInterface $provider): iterable
     {
+        /**
+         * @var \ReflectionMethod $method
+         * @var Register $attribute
+         */
         foreach ($provider->getMethodMetadata(Register::class) as $method => $attribute) {
             yield $attribute => $method->getClosure(
                 $provider->getContext()
@@ -157,6 +169,7 @@ class Loader implements RepositoryInterface, LoaderInterface
 
         $class = $method->getDeclaringClass();
         $message = \sprintf(self::ERROR_AMBIGUOUS_IDENTIFIER, $class . '::' . $method->getName());
+
         throw new RegistrationException($message);
     }
 }

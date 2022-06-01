@@ -29,9 +29,33 @@ class ServiceNotInstantiatableException extends ServiceNotResolvableException
     }
 
     /**
+     * @param \Throwable $e
+     * @param non-empty-string $service
+     * @return static
+     */
+    public static function fromException(\Throwable $e, string $service): self
+    {
+        $message = 'An error occurred while service [%s] instantiation: %s';
+        $message = \sprintf($message, $service, $e->getMessage());
+
+        return new self($service, $message, (int)$e->getCode(), $e);
+    }
+
+    /**
+     * @param non-empty-string $service
+     * @return static
+     */
+    public static function fromInvalidClass(string $service): self
+    {
+        $message = 'Can not create an object of a non-existent class [%s]';
+
+        return new self($service, \sprintf($message, $service));
+    }
+
+    /**
      * @return non-empty-string
      */
-    public function getServiceId(): string
+    public function getId(): string
     {
         return $this->service;
     }

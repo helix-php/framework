@@ -11,13 +11,13 @@ declare(strict_types=1);
 
 namespace Helix\Contracts\Container;
 
-use Helix\Contracts\ParamResolver\ValueResolverInterface;
+use Helix\Contracts\ParamResolver\MiddlewareInterface;
 
 interface DispatcherInterface
 {
     /**
      * @param non-empty-string|callable $fn
-     * @param iterable<ValueResolverInterface|class-string<ValueResolverInterface>> $resolvers
+     * @param iterable<MiddlewareInterface|class-string<MiddlewareInterface>> $resolvers
      * @return mixed
      */
     public function call(string|callable $fn, iterable $resolvers = []): mixed;

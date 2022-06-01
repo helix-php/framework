@@ -11,9 +11,9 @@ declare(strict_types=1);
 
 namespace Helix\Boot\Attribute;
 
-use Helix\Container\Container;
 use Helix\Container\Definition\SingletonDefinition;
-use Helix\Contracts\Container\DefinitionInterface;
+use Helix\Container\Definition\DefinitionInterface;
+use Helix\Contracts\EventDispatcher\DispatcherInterface;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
 final class Singleton extends ServiceDefinition
@@ -21,11 +21,11 @@ final class Singleton extends ServiceDefinition
     /**
      * {@inheritDoc}
      */
-    public function create(string $id, Container $container, callable $declarator): DefinitionInterface
-    {
-        return new SingletonDefinition(
-            $container->detach($declarator),
-            $container->getEventDispatcher(),
-        );
+    public function create(
+        string $id,
+        DispatcherInterface $events,
+        \Closure $instantiator,
+    ): DefinitionInterface {
+        return new SingletonDefinition($instantiator, $events);
     }
 }

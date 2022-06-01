@@ -14,8 +14,13 @@ namespace Helix\Foundation;
 use Composer\InstalledVersions;
 use Helix\Boot\Loader;
 use Helix\Boot\LoaderInterface;
+use Helix\Boot\RepositoryInterface;
 use Helix\Container\Container;
 use Helix\Container\Exception\RegistrationException;
+use Helix\Container\Exception\ServiceNotFoundException;
+use Helix\Container\Exception\ServiceNotInstantiatableException;
+use Helix\ParamResolver\Exception\ParamNotResolvableException;
+use Helix\ParamResolver\Exception\SignatureException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -54,9 +59,16 @@ abstract class Application implements LoaderInterface
     {
         $this->env = $info->env;
         $this->debug = $info->debug;
+
         $this->container = new Container($info->container);
-        $this->extensions = new Loader($this->container);
-        $this->initVersion();
+        $this->extensions = new Loader(
+            $this->container->getDefinitions(),
+            $this->container->getDispatcher(),
+            $this->container->getEventDispatcher(),
+        );
+
+        $this->version = InstalledVersions::getPrettyVersion('helix/foundation')
+            ?? 'dev-master';
 
         $this->bindDefaults($info);
         $this->loadMany($info->extensions);
@@ -98,30 +110,30 @@ abstract class Application implements LoaderInterface
     {
         $this->container->instance($this)
             ->as(self::class);
+
         $this->container->instance($info->path);
 
         $this->container->instance(new NullLogger())
             ->as(LoggerInterface::class);
+
         $this->container->instance($this->extensions)
-            ->withInterfaces();
+            ->as(RepositoryInterface::class)
+            ->as(LoaderInterface::class);
     }
 
     /**
-     * @return void
-     */
-    private function initVersion(): void
-    {
-        $this->version = InstalledVersions::getPrettyVersion('helix/foundation')
-            ?? 'dev-master';
-    }
-
-    /**
-     * @param iterable<string|object> $extensions
+     * @param iterable<class-string|object>|iterable<class-string, bool> $extensions
      * @return void
      * @throws RegistrationException
+     * @throws ServiceNotFoundException
+     * @throws ServiceNotInstantiatableException
+     * @throws ParamNotResolvableException
+     * @throws SignatureException
      */
     private function loadMany(iterable $extensions): void
     {
+        $instantiator = $this->container->getInstantiator();
+
         foreach ($extensions as $key => $extension) {
             if (\is_bool($extension)) {
                 if ($extension === false) {
@@ -133,7 +145,8 @@ abstract class Application implements LoaderInterface
 
             if ($extension) {
                 if (\is_string($extension)) {
-                    $extension = $this->container->make($extension);
+                    /** @psalm-suppress ArgumentTypeCoercion */
+                    $extension = $instantiator->make($extension);
                 }
 
                 $this->load($extension);

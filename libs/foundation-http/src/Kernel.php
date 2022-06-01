@@ -13,13 +13,11 @@ namespace Helix\Foundation\Http;
 
 use Helix\Contracts\Container\DispatcherInterface;
 use Helix\Contracts\Container\InstantiatorInterface;
-use Helix\Contracts\ParamResolver\ValueResolverInterface;
 use Helix\Contracts\Router\MatchedRouteInterface;
 use Helix\Contracts\Router\RouterInterface;
-use Helix\Middleware\CallableHandler;
-use Helix\Middleware\Pipeline;
-use Helix\ParamResolver\ValueResolver\NamedArgumentsResolver;
-use Helix\ParamResolver\ValueResolver\ObjectResolver;
+use Helix\Http\Middleware\Pipeline;
+use Helix\ParamResolver\Middleware\NamedArgumentsResolver;
+use Helix\ParamResolver\Middleware\ObjectResolver;
 use Helix\Router\ProvidesMiddlewareInterface;
 use Helix\Router\ProvidesResolversInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -35,7 +33,7 @@ class Kernel implements RequestHandlerInterface
     protected array $middleware = [];
 
     /**
-     * @var array<class-string<ValueResolverInterface>|ValueResolverInterface>
+     * @var array<class-string<MiddlewareInterface>|MiddlewareInterface>
      */
     protected array $resolvers = [];
 
@@ -88,9 +86,9 @@ class Kernel implements RequestHandlerInterface
         $middleware = $this->getPreRoutingMiddleware();
 
         return (new Pipeline($this->getMiddlewareInstances($middleware, $resolvers)))
-            ->process($request, new CallableHandler(fn (ServerRequestInterface $request): ResponseInterface =>
+            ->processToCallable($request, fn (ServerRequestInterface $request): ResponseInterface =>
                 $this->postRouting($request, $this->router->match($request))
-            ));
+            );
     }
 
     /**
@@ -104,14 +102,14 @@ class Kernel implements RequestHandlerInterface
         $middleware = $this->getPostRoutingMiddleware($route);
 
         return (new Pipeline($this->getMiddlewareInstances($middleware, $resolvers)))
-            ->process($request, new CallableHandler(fn (): ResponseInterface =>
+            ->processToCallable($request, fn (): ResponseInterface =>
                 $this->dispatcher->call($route->getHandler(), $resolvers)
-            ));
+            );
     }
 
     /**
      * @param iterable<class-string<MiddlewareInterface>|MiddlewareInterface> $middleware
-     * @param iterable<ValueResolverInterface> $resolvers
+     * @param iterable<MiddlewareInterface> $resolvers
      * @return iterable<MiddlewareInterface>
      */
     private function getMiddlewareInstances(iterable $middleware = [], iterable $resolvers = []): iterable
@@ -125,14 +123,14 @@ class Kernel implements RequestHandlerInterface
     }
 
     /**
-     * @param iterable<class-string<ValueResolverInterface>|ValueResolverInterface> $resolvers
-     * @param array<ValueResolverInterface> $previous
-     * @return array<ValueResolverInterface>
+     * @param iterable<class-string<MiddlewareInterface>|MiddlewareInterface> $resolvers
+     * @param array<MiddlewareInterface> $previous
+     * @return array<MiddlewareInterface>
      */
     private function getValueResolverInstances(iterable $resolvers = [], array $previous = []): array
     {
         foreach ($resolvers as $resolver) {
-            $previous[] = $resolver instanceof ValueResolverInterface
+            $previous[] = $resolver instanceof MiddlewareInterface
                 ? $resolver
                 : $this->instantiator->make($resolver, $previous)
             ;
@@ -165,7 +163,7 @@ class Kernel implements RequestHandlerInterface
     /**
      * @param ServerRequestInterface $request
      * @param MatchedRouteInterface $route
-     * @return iterable<ValueResolverInterface>
+     * @return iterable<MiddlewareInterface>
      */
     private function getPostRoutingValueResolvers(ServerRequestInterface $request, MatchedRouteInterface $route): iterable
     {
@@ -186,7 +184,7 @@ class Kernel implements RequestHandlerInterface
 
     /**
      * @param ServerRequestInterface $request
-     * @return iterable<ValueResolverInterface>
+     * @return iterable<MiddlewareInterface>
      */
     private function getPreRoutingValueResolvers(ServerRequestInterface $request): iterable
     {

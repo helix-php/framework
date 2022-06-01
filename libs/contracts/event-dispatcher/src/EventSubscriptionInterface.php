@@ -16,7 +16,7 @@ namespace Helix\Contracts\EventDispatcher;
  *
  * @template-extends DispatcherInterface<TEvent>
  */
-interface EventSubscriptionInterface extends \Stringable
+interface EventSubscriptionInterface extends DispatcherInterface, \Stringable
 {
     /**
      * @return non-empty-string|int
@@ -32,12 +32,4 @@ interface EventSubscriptionInterface extends \Stringable
      * @return void
      */
     public function cancel(): void;
-
-    /**
-     * @template TEvent of object
-     *
-     * @param TEvent $event
-     * @return TEvent
-     */
-    public function __invoke(object $event): object;
 }

@@ -12,7 +12,8 @@ declare(strict_types=1);
 namespace Helix\Boot\Attribute;
 
 use Helix\Container\Container;
-use Helix\Contracts\Container\DefinitionInterface;
+use Helix\Container\Definition\DefinitionInterface;
+use Helix\Contracts\EventDispatcher\DispatcherInterface;
 
 abstract class ServiceDefinition implements MethodMetadataInterface
 {
@@ -33,10 +34,14 @@ abstract class ServiceDefinition implements MethodMetadataInterface
     }
 
     /**
-     * @param class-string $id
-     * @param Container $container
-     * @param callable $declarator
+     * @param string $id
+     * @param DispatcherInterface $events
+     * @param \Closure():object $instantiator
      * @return DefinitionInterface
      */
-    abstract public function create(string $id, Container $container, callable $declarator): DefinitionInterface;
+    abstract public function create(
+        string $id,
+        DispatcherInterface $events,
+        \Closure $instantiator,
+    ): DefinitionInterface;
 }

@@ -12,13 +12,14 @@ declare(strict_types=1);
 namespace Helix\Container\Definition;
 
 /**
- * @template TDefinition of object
- * @template-extends LazyDefinition<TDefinition>
+ * @template TService of object
+ *
+ * @template-extends LazyDefinition<TService>
  */
 class SingletonDefinition extends LazyDefinition
 {
     /**
-     * @var TDefinition|null
+     * @var TService|null
      */
     protected ?object $instance = null;
 

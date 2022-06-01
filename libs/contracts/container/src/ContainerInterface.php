@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace Helix\Contracts\Container;
 
-use Helix\Contracts\ParamResolver\ValueResolverInterface;
+use Helix\Contracts\ParamResolver\MiddlewareInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
-interface ContainerInterface extends PsrContainerInterface, RepositoryInterface
+interface ContainerInterface extends PsrContainerInterface
 {
     /**
      * Finds an entry of the container by its identifier and returns it.
@@ -22,7 +22,7 @@ interface ContainerInterface extends PsrContainerInterface, RepositoryInterface
      * @template TService of object
      *
      * @param class-string<TService>|non-empty-string $id
-     * @param iterable<ValueResolverInterface|class-string<ValueResolverInterface>> $resolvers
+     * @param iterable<MiddlewareInterface|class-string<MiddlewareInterface>> $resolvers
      * @return TService
      * @psalm-suppress MoreSpecificImplementedParamType
      */

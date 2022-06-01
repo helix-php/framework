@@ -12,14 +12,10 @@ declare(strict_types=1);
 namespace Helix\Contracts\ParamResolver\Exception;
 
 /**
- * An exception thrown during processing of a passed argument
- * of a function and/or method.
+ * An exception that occurs when the callable (method/function/etc) element
+ * cannot be parsed.
  *
- * For example, an error may occur when the specified function is not found:
- * ```php
- *  $resolver->fromFunction('unknown_function');
- *  // > SignatureException: Function "unknown_function" not found.
- * ```
+ * For example, in cases where the passed function does not exist.
  */
 interface SignatureExceptionInterface extends ParamResolverExceptionInterface
 {
