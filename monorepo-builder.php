@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Symplify\MonorepoBuilder\Config\MBConfig;
 
 return static function (MBConfig $config): void {
+    $config->defaultBranch('master');
+
     $config->packageDirectories([
         __DIR__ . '/libs/contracts',
         __DIR__ . '/libs',
