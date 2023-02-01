@@ -57,7 +57,7 @@ jobs:
       # no tag
       - if: "!startsWith(github.ref, 'refs/tags/')"
         name: Monorepo Split of ${{ matrix.package.split_repository }}
-        uses: symplify/github-action-monorepo-split@2.1
+        uses: symplify/github-action-monorepo-split@2.3
         with:
           package_directory: 'libs/${{ matrix.package.local_path }}'
           repository_organization: 'helix-php'
@@ -68,7 +68,7 @@ jobs:
       # with tag
       - if: "startsWith(github.ref, 'refs/tags/')"
         name: Monorepo Tagged Split of ${{ matrix.package }}
-        uses: symplify/github-action-monorepo-split@2.1
+        uses: symplify/github-action-monorepo-split@2.3
         with:
           tag: ${GITHUB_REF#refs/tags/}
           package_directory: 'libs/${{ matrix.package.local_path }}'
