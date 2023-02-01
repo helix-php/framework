@@ -9,6 +9,8 @@
         "psr/http-message-implementation": "^1.0",
         "psr/http-factory": "^1.0",
         "psr/http-factory-implementation": "^1.0",
+        "helix/http-cookie": "^1.0",
+        "helix/http-header": "^1.0",
         "helix/http-method": "^1.0",
         "helix/http-status-code": "^1.0"
     },
