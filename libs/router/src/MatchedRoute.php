@@ -10,9 +10,7 @@ use Helix\Contracts\Router\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-class MatchedRoute implements
-    MatchedRouteInterface,
-    ProvidesMiddlewareInterface
+class MatchedRoute implements MatchedRouteInterface, ProvidesMiddlewareInterface
 {
     /**
      * @param RouteInterface $route
@@ -53,7 +51,7 @@ class MatchedRoute implements
     /**
      * {@inheritDoc}
      */
-    public function getHandler(): string|callable
+    public function getHandler(): mixed
     {
         return $this->route->getHandler();
     }

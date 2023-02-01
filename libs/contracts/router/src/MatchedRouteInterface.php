@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Helix\Contracts\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 
 interface MatchedRouteInterface extends RouteInterface
 {
@@ -13,11 +12,6 @@ interface MatchedRouteInterface extends RouteInterface
      * @return array<non-empty-string, string>
      */
     public function getArguments(): array;
-
-    /**
-     * @return UriInterface
-     */
-    public function getUri(): UriInterface;
 
     /**
      * @return ServerRequestInterface
