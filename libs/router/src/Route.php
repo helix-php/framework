@@ -11,10 +11,7 @@ use Helix\Router\Internal\Normalizer;
 use JetBrains\PhpStorm\Language;
 use Psr\Http\Server\MiddlewareInterface;
 
-class Route implements
-    RouteInterface,
-    ProvidesMiddlewareInterface,
-    ProvidesResolversInterface
+class Route implements RouteInterface, ProvidesMiddlewareInterface
 {
     /**
      * @var non-empty-string|null
@@ -22,7 +19,7 @@ class Route implements
     protected ?string $name = null;
 
     /**
-     * @var array<non-empty-string, string>
+     * @var array<non-empty-string, non-empty-string>
      */
     protected array $parameters = [];
 
@@ -56,7 +53,7 @@ class Route implements
         mixed $handler = null,
         MethodInterface|string $method = Method::GET,
     ) {
-        $this->path = Normalizer::path($path);
+        $this->path = Normalizer::path($path) ?: '/';
 
         /** @psalm-suppress MissingClosureReturnType */
         $this->handler = $handler ?? (static fn () => null);
@@ -110,14 +107,6 @@ class Route implements
     public function getMiddleware(): array
     {
         return $this->middleware;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getResolvers(): array
-    {
-        return $this->resolvers;
     }
 
     /**

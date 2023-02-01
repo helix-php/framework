@@ -101,9 +101,6 @@ class AttributeReader implements ReaderInterface
             $result->where($name, $pcre);
         }
 
-        $result->using(...$group->resolvers);
-        $result->using(...$route->resolvers);
-
         $result->through(...$group->middleware);
         $result->through(...$route->middleware);
 

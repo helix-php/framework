@@ -50,6 +50,10 @@ class Attribute extends Flag implements AttributeInterface
     {
         $name = self::nameToStringOrNull($name);
 
+        if ($name === null) {
+            return null;
+        }
+
         return match (true) {
             $value instanceof \Stringable => new self($name, $value),
             \is_scalar($value) => new self($name, (string)$value),

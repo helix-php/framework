@@ -33,14 +33,9 @@ final class Normalizer
     }
 
     /**
-     * @template TPath of non-empty-string
-     *
-     * @param TPath $path
+     * @param string $path
      * @param bool $atRoot
-     * @return TPath
-     *
-     * @psalm-suppress MoreSpecificReturnType
-     * @psalm-suppress LessSpecificReturnStatement
+     * @return string
      */
     public static function path(string $path, bool $atRoot = true): string
     {

@@ -12,8 +12,7 @@ use Psr\Http\Message\UriInterface;
 
 class MatchedRoute implements
     MatchedRouteInterface,
-    ProvidesMiddlewareInterface,
-    ProvidesResolversInterface
+    ProvidesMiddlewareInterface
 {
     /**
      * @param RouteInterface $route
@@ -90,18 +89,6 @@ class MatchedRoute implements
     {
         if ($this->route instanceof ProvidesMiddlewareInterface) {
             return $this->route->getMiddleware();
-        }
-
-        return [];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getResolvers(): iterable
-    {
-        if ($this->route instanceof ProvidesResolversInterface) {
-            return $this->route->getResolvers();
         }
 
         return [];

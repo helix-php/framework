@@ -42,8 +42,7 @@
     <arg name="colors"/>
 
     <!-- includes -->
-    <file>./libs/*/src</file>
-    <file>./libs/contracts/*/src</file>
+    <file>./libs</file>
 
     <!-- excludes -->
     <exclude-pattern type="relative">*/tests/*</exclude-pattern>

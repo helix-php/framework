@@ -41,10 +41,7 @@ final class Group implements \IteratorAggregate, \Countable
      */
     public function where(string $name, string $pattern): self
     {
-        return $this->each(
-            static fn (Route $route) =>
-            $route->where($name, $pattern)
-        );
+        return $this->each(static fn (Route $route): Route => $route->where($name, $pattern));
     }
 
     /**
@@ -53,10 +50,7 @@ final class Group implements \IteratorAggregate, \Countable
      */
     public function through(mixed ...$middleware): self
     {
-        return $this->each(
-            static fn (Route $route) =>
-            $route->through(...$middleware)
-        );
+        return $this->each(static fn (Route $route): Route => $route->through(...$middleware));
     }
 
     /**
@@ -65,10 +59,7 @@ final class Group implements \IteratorAggregate, \Countable
      */
     public function then(callable $action): self
     {
-        return $this->each(
-            static fn (Route $route) =>
-            $route->then($action)
-        );
+        return $this->each(static fn (Route $route): Route => $route->then($action));
     }
 
     /**
@@ -78,10 +69,9 @@ final class Group implements \IteratorAggregate, \Countable
      */
     public function prefix(string $prefix, bool $concat = false): self
     {
-        return $this->each(
-            static fn (Route $route) =>
-            $route->located(Normalizer::chunks([$prefix, $route->getPath()], $concat))
-        );
+        return $this->each(static fn (Route $route) => $route->located(
+            Normalizer::chunks([$prefix, $route->getPath()], $concat)
+        ));
     }
 
     /**
@@ -91,10 +81,9 @@ final class Group implements \IteratorAggregate, \Countable
      */
     public function suffix(string $suffix, bool $concat = true): self
     {
-        return $this->each(
-            static fn (Route $route) =>
-            $route->located(Normalizer::chunks([$route->getPath(), $suffix], $concat))
-        );
+        return $this->each(static fn (Route $route) => $route->located(
+            Normalizer::chunks([$route->getPath(), $suffix], $concat)
+        ));
     }
 
     /**
