@@ -21,7 +21,7 @@
         "jetbrains/phpstorm-attributes": "^1.0",
         "httpsoft/http-message": "^1.0",
         "phpunit/phpunit": "^9.5.20",
-        "vimeo/psalm": "^4.22"
+        "vimeo/psalm": "^5.6"
     },
     "autoload-dev": {
         "psr-4": {

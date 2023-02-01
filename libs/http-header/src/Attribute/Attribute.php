@@ -1,12 +1,5 @@
 <?php
 
-/**
- * This file is part of Helix package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Helix\Http\Header\Attribute;
@@ -23,16 +16,29 @@ class Attribute extends Flag implements AttributeInterface
     final public const DELIMITER = '=';
 
     /**
+     * @var string|\Stringable
+     */
+    protected string|\Stringable $value;
+
+    /**
+     * @var non-empty-string
+     */
+    protected string $delimiter = self::DELIMITER;
+
+    /**
      * @param non-empty-string $name
      * @param string|\Stringable $value
      * @param non-empty-string $delimiter
      */
     public function __construct(
         string $name,
-        protected string|\Stringable $value,
-        protected string $delimiter = self::DELIMITER,
+        string|\Stringable $value,
+        string $delimiter = self::DELIMITER,
     ) {
         parent::__construct($name);
+
+        $this->setValue($value);
+        $this->setDelimiter($delimiter);
     }
 
     /**
@@ -45,7 +51,6 @@ class Attribute extends Flag implements AttributeInterface
         $name = self::nameToStringOrNull($name);
 
         return match (true) {
-            $name === null => null,
             $value instanceof \Stringable => new self($name, $value),
             \is_scalar($value) => new self($name, (string)$value),
             default => null,
@@ -61,14 +66,31 @@ class Attribute extends Flag implements AttributeInterface
     }
 
     /**
-     * @psalm-immutable
      * @param non-empty-string $delimiter
+     *
+     * @return void
+     */
+    public function setDelimiter(string $delimiter): void
+    {
+        /** @psalm-suppress TypeDoesNotContainType */
+        if ($delimiter === '') {
+            throw new \InvalidArgumentException('Attribute name-value delimiter cannot be empty');
+        }
+
+        $this->delimiter = $delimiter;
+    }
+
+    /**
+     * @psalm-immutable
+     *
+     * @param non-empty-string $delimiter
+     *
      * @return self
      */
     public function withDelimiter(string $delimiter): self
     {
         $self = clone $this;
-        $self->delimiter = $delimiter;
+        $self->setDelimiter($delimiter);
 
         return $self;
     }
@@ -82,9 +104,17 @@ class Attribute extends Flag implements AttributeInterface
     }
 
     /**
-     * @psalm-immutable
      * @param string|\Stringable $value
-     * @return self
+     *
+     * @return void
+     */
+    public function setValue(string|\Stringable $value): void
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * {@inheritDoc}
      */
     public function withValue(string|\Stringable $value): self
     {

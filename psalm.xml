@@ -23,7 +23,6 @@
     </issueHandlers>
     <projectFiles>
         <directory name="libs/**/src/*" />
-        <directory name="libs/bridge/**/src/*" />
         <directory name="libs/contracts/**/src/*" />
         <ignoreFiles>
             <directory name="vendor" />

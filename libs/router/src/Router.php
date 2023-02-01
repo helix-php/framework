@@ -1,42 +1,27 @@
 <?php
 
-/**
- * This file is part of Helix package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Helix\Router;
 
 use FastRoute\Dispatcher;
 use Helix\Contracts\Http\Method\MethodInterface;
-use Helix\Contracts\Http\StatusCode\StatusCodeInterface;
 use Helix\Contracts\Router\MatchedRouteInterface;
 use Helix\Contracts\Router\RegistrarInterface;
 use Helix\Contracts\Router\RepositoryInterface;
 use Helix\Contracts\Router\RouteInterface;
 use Helix\Contracts\Router\RouterInterface;
 use Helix\Http\Method\Method;
-use Helix\Http\StatusCode\StatusCode;
 use Helix\Router\Exception\BadRouteDefinitionException;
 use Helix\Router\Exception\RouteMatchingException;
 use Helix\Router\Exception\RouteNotAllowedException;
 use Helix\Router\Exception\RouteNotFoundException;
 use Helix\Router\Exception\RouterException;
-use Helix\Router\Generator\Exception\RouteGeneratorExceptionInterface;
-use Helix\Router\Generator\Generator;
-use Helix\Router\Generator\GeneratorInterface;
 use Helix\Router\Internal\Compiler;
 use Helix\Router\Internal\Normalizer;
 use Helix\Router\Reader\AttributeReader;
 use Helix\Router\Reader\ReaderInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriFactoryInterface;
 
 class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
 {
@@ -81,28 +66,14 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
     private \Closure $defaultHandler;
 
     /**
-     * @var GeneratorInterface
-     */
-    private GeneratorInterface $generator;
-
-    /**
-     * @param ResponseFactoryInterface $responses
-     * @param UriFactoryInterface $uris
-     * @param ReaderInterface|null $reader
+     * @param ReaderInterface $reader
      */
     public function __construct(
-        private readonly ResponseFactoryInterface $responses,
-        private readonly UriFactoryInterface $uris,
-        ReaderInterface $reader = null
+        ReaderInterface $reader = new AttributeReader(),
     ) {
         $this->compiler = new Compiler();
-        $this->generator = new Generator($uris, $this);
-        $this->reader = $reader ?? new AttributeReader();
-        $this->defaultHandler = function (): ResponseInterface {
-            $status = StatusCode::NOT_IMPLEMENTED;
-
-            return $this->responses->createResponse($status->getCode(), $status->getReasonPhrase());
-        };
+        $this->reader = $reader;
+        $this->defaultHandler = (static fn () => null);
     }
 
     /**
@@ -253,102 +224,6 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
 
     /**
      * @param non-empty-string $path
-     * @param string|\Stringable $location
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     */
-    public function redirect(string $path, string|\Stringable $location, iterable $methods = []): Group
-    {
-        return $this->redirectToUri($path, $location, StatusCode::FOUND, $methods);
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param string $route
-     * @param iterable<string, string> $args
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     * @throws RouteGeneratorExceptionInterface
-     */
-    public function redirectTo(string $path, string $route, iterable $args = [], iterable $methods = []): Group
-    {
-        return $this->redirectToRoute($path, $route, $args, StatusCode::FOUND, $methods);
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param non-empty-string|\Stringable $location
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     */
-    public function temporary(string $path, string|\Stringable $location, iterable $methods = []): Group
-    {
-        return $this->redirectToUri($path, $location, StatusCode::TEMPORARY_REDIRECT, $methods);
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param string $route
-     * @param iterable<string, string> $args
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     * @throws RouteGeneratorExceptionInterface
-     */
-    public function temporaryTo(string $path, string $route, iterable $args = [], iterable $methods = []): Group
-    {
-        return $this->redirectToRoute($path, $route, $args, StatusCode::TEMPORARY_REDIRECT, $methods);
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param non-empty-string|\Stringable $location
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     */
-    public function permanent(string $path, string|\Stringable $location, iterable $methods = []): Group
-    {
-        return $this->redirectToUri($path, $location, StatusCode::PERMANENT_REDIRECT, $methods);
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param string $route
-     * @param iterable<string, string> $args
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     * @throws RouteGeneratorExceptionInterface
-     */
-    public function permanentTo(string $path, string $route, iterable $args = [], iterable $methods = []): Group
-    {
-        return $this->redirectToRoute($path, $route, $args, StatusCode::PERMANENT_REDIRECT, $methods);
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param non-empty-string|\Stringable $location
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     */
-    public function moved(string $path, string|\Stringable $location, iterable $methods = []): Group
-    {
-        return $this->redirectToUri($path, $location, StatusCode::MOVED_PERMANENTLY, $methods);
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param string $route
-     * @param iterable<string, string> $args
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     * @throws RouteGeneratorExceptionInterface
-     */
-    public function movedTo(string $path, string $route, iterable $args = [], iterable $methods = []): Group
-    {
-        return $this->redirectToRoute($path, $route, $args, StatusCode::MOVED_PERMANENTLY, $methods);
-    }
-
-    /**
-     * @param non-empty-string $path
      * @param mixed $handler
      * @return Group
      */
@@ -365,7 +240,7 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
      */
     public function oneOf(iterable $methods, string $path, mixed $handler = null): Group
     {
-        return $this->group(function (Router $router) use ($methods, $path, $handler): void {
+        return $this->group(static function (self $router) use ($methods, $path, $handler): void {
             foreach ($methods as $method) {
                 $router->make($method, $path, $handler);
             }
@@ -380,7 +255,7 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
      * @param null|callable(Router):void $group
      * @return Group
      */
-    public function group(callable $group = null): Group
+    public function group(callable|null $group = null): Group
     {
         $child = $this->new();
 
@@ -395,22 +270,6 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
                 $this->add($route);
             }
         }
-    }
-
-    /**
-     * @param class-string $class
-     * @return Group
-     * @throws BadRouteDefinitionException
-     */
-    public function import(string $class): Group
-    {
-        $routes = [...$this->reader->read($class)];
-
-        foreach ($routes as $route) {
-            $this->add($route);
-        }
-
-        return new Group($routes);
     }
 
     /**
@@ -448,47 +307,7 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
      */
     protected function new(): self
     {
-        return new self($this->responses, $this->uris, $this->reader);
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param string|\Stringable $location
-     * @param iterable<MethodInterface> $methods
-     * @param StatusCodeInterface $code
-     * @return Group
-     */
-    private function redirectToUri(
-        string $path,
-        string|\Stringable $location,
-        StatusCodeInterface $code = StatusCode::FOUND,
-        iterable $methods = [],
-    ): Group {
-        return $this->oneOf($methods, $path, fn () =>
-            $this->responses->createResponse($code->getCode(), $code->getReasonPhrase())
-                ->withAddedHeader('Location', (string)$location)
-        );
-    }
-
-    /**
-     * @param non-empty-string $path
-     * @param non-empty-string $route
-     * @param iterable<string, string> $args
-     * @param StatusCodeInterface $code
-     * @param iterable<MethodInterface> $methods
-     * @return Group
-     * @throws RouteGeneratorExceptionInterface
-     */
-    private function redirectToRoute(
-        string $path,
-        string $route,
-        iterable $args = [],
-        StatusCodeInterface $code = StatusCode::FOUND,
-        iterable $methods = [],
-    ): Group {
-        $location = $this->generator->generate($route, $args);
-
-        return $this->redirectToUri($path, $location, $code, $methods);
+        return new self($this->reader);
     }
 
     /**

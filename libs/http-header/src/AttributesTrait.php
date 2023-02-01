@@ -1,29 +1,21 @@
 <?php
 
-/**
- * This file is part of Helix package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Helix\Http\Header;
 
 use Helix\Contracts\Http\Header\Attribute\AttributeInterface;
 use Helix\Contracts\Http\Header\Attribute\FlagInterface;
-use Helix\Contracts\Http\Header\ProvidesAttributesInterface;
-use Helix\Contracts\Http\Header\ValueInterface;
+use Helix\Contracts\Http\Header\HeaderInterface;
 
 /**
- * @mixin ProvidesAttributesInterface
- * @psalm-require-implements ProvidesAdditionalAttributesInterface
+ * @mixin HeaderInterface
+ * @psalm-require-implements HeaderInterface
  */
 trait AttributesTrait
 {
     /**
-     * @var array<FlagInterface>
+     * @var array<non-empty-lowercase-string, FlagInterface>
      */
     protected array $attributes = [];
 
@@ -36,9 +28,24 @@ trait AttributesTrait
     }
 
     /**
-     * Updates an additional attributes of the {@see ValueInterface} object.
+     * {@inheritDoc}
+     */
+    public function findAttribute(string $name): ?FlagInterface
+    {
+        return $this->attributes[\strtolower($name)] ?? null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function hasAttribute(string $name): bool
+    {
+        return isset($this->attributes[\strtolower($name)]);
+    }
+
+    /**
+     * @param list<FlagInterface> $attributes
      *
-     * @param iterable<FlagInterface> $attributes
      * @return void
      */
     public function setAttributes(iterable $attributes): void
@@ -48,9 +55,8 @@ trait AttributesTrait
     }
 
     /**
-     * Updates an additional attributes of the {@see ValueInterface} object.
+     * @param list<FlagInterface> $attributes
      *
-     * @param iterable<FlagInterface> $attributes
      * @return void
      */
     public function addAttributes(iterable $attributes): void
@@ -68,11 +74,7 @@ trait AttributesTrait
     }
 
     /**
-     * Immutable equivalent of the {@see SetCookie::setAttributes()} method.
-     *
-     * @psalm-immutable
-     * @param iterable<FlagInterface> $attributes
-     * @return self
+     * {@inheritDoc}
      */
     public function withAttributes(iterable $attributes): self
     {
@@ -83,11 +85,7 @@ trait AttributesTrait
     }
 
     /**
-     * Immutable equivalent of the {@see SetCookie::addAttributes()} method.
-     *
-     * @psalm-immutable
-     * @param iterable<FlagInterface> $attributes
-     * @return self
+     * {@inheritDoc}
      */
     public function withAddedAttributes(iterable $attributes): self
     {

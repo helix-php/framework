@@ -2,40 +2,46 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symplify\ComposerJsonManipulator\ValueObject\ComposerJsonSection;
-use Symplify\MonorepoBuilder\ValueObject\Option;
+use Symplify\MonorepoBuilder\Config\MBConfig;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $parameters = $containerConfigurator->parameters();
-
-    $parameters->set(Option::PACKAGE_DIRECTORIES, [
+return static function (MBConfig $config): void {
+    $config->packageDirectories([
+        __DIR__ . '/libs/contracts',
         __DIR__ . '/libs',
     ]);
 
-    $parameters->set(Option::DATA_TO_APPEND, [
-        ComposerJsonSection::DESCRIPTION => 'Helix Framework',
-        ComposerJsonSection::HOMEPAGE => 'https://github.com/helix-php',
-        ComposerJsonSection::PREFER_STABLE => true,
-        ComposerJsonSection::MINIMUM_STABILITY => 'dev',
-        ComposerJsonSection::TYPE => 'library',
-        ComposerJsonSection::LICENSE => 'MIT',
-        ComposerJsonSection::AUTHORS     => [
+    $config->dataToAppend([
+        'description' => 'Helix Framework',
+        'homepage' => 'https://github.com/helix-php',
+        'prefer-stable' => true,
+        'minimum-stability' => 'dev',
+        'type' => 'library',
+        'license' => 'MIT',
+        'support' => [
+            'issues' => 'https://github.com/helix-php/framework/issues',
+            'source' => 'https://github.com/helix-php/framework',
+        ],
+        'authors' => [
             [
-                'name'  => 'Kirill Nesmeyanov',
-                'email' => 'nesk@xakep.ru',
-                'role'  => 'maintainer',
+                'name'      => 'Kirill Nesmeyanov',
+                'email'     => 'nesk@xakep.ru',
+                'role'      => 'maintainer',
+                'homepage'  => 'https://nesk.me'
             ],
         ],
-        ComposerJsonSection::REQUIRE_DEV => [
-            'symplify/monorepo-builder'     => '^10.0',
+        'require-dev' => [
+            'symplify/monorepo-builder'     => '^11.2',
             'symfony/var-dumper'            => '^5.4|^6.0',
             'phpunit/phpunit'               => '^9.5.20',
-            'vimeo/psalm'                   => '^4.22',
+            'vimeo/psalm'                   => '^5.6',
             'jetbrains/phpstorm-attributes' => '^1.0',
-            'friendsofphp/php-cs-fixer'     => '^3.8',
-            'nyholm/psr7'                   => '^1.5',
+            'squizlabs/php_codesniffer'     => '^3.7',
+
+            // Status Codes Implementation
             'symfony/http-foundation'       => '^5.4|^6.0',
+
+            // PSR-7/PSR-17 implementations
+            'nyholm/psr7'                   => '^1.5',
             'laminas/laminas-diactoros'     => '^2.12',
             'httpsoft/http-message'         => '^1.0',
         ],

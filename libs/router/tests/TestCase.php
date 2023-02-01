@@ -1,12 +1,5 @@
 <?php
 
-/**
- * This file is part of Helix package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Helix\Router\Tests;
@@ -39,7 +32,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function router(array $routes = []): Router
     {
-        $router = new Router(new Psr17Factory(), new Psr17Factory());
+        $router = new Router();
 
         foreach ($routes as $route) {
             $router->add($route);

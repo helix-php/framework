@@ -1,12 +1,5 @@
 <?php
 
-/**
- * This file is part of Helix package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Helix\Http\Header\Attribute;
@@ -16,15 +9,16 @@ use Helix\Contracts\Http\Header\Attribute\FlagInterface;
 class Flag implements FlagInterface
 {
     /**
+     * @var non-empty-string
+     */
+    protected string $name;
+
+    /**
      * @param non-empty-string $name
      */
-    public function __construct(
-        protected string $name,
-    ) {
-        /** @psalm-suppress TypeDoesNotContainType */
-        if ($this->name === '') {
-            throw new \InvalidArgumentException('Name of the attribute cannot be empty');
-        }
+    public function __construct(string $name)
+    {
+        $this->setName($name);
     }
 
     /**
@@ -64,24 +58,37 @@ class Flag implements FlagInterface
     }
 
     /**
-     * @psalm-immutable
-     * @param non-empty-string $name
-     * @return $this
-     */
-    public function withName(string $name): self
-    {
-        $self = clone $this;
-        $self->name = $name;
-
-        return $self;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @param non-empty-string $name
+     *
+     * @return void
+     */
+    public function setName(string $name): void
+    {
+        /** @psalm-suppress TypeDoesNotContainType */
+        if ($name === '') {
+            throw new \InvalidArgumentException('Name of the attribute cannot be empty');
+        }
+
+        $this->name = $name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function withName(string $name): self
+    {
+        $self = clone $this;
+        $self->setName($name);
+
+        return $self;
     }
 
     /**

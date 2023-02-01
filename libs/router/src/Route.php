@@ -1,18 +1,10 @@
 <?php
 
-/**
- * This file is part of Helix package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Helix\Router;
 
 use Helix\Contracts\Http\Method\MethodInterface;
-use Helix\Contracts\ParamResolver\ValueResolverInterface;
 use Helix\Contracts\Router\RouteInterface;
 use Helix\Http\Method\Method;
 use Helix\Router\Internal\Normalizer;
@@ -53,11 +45,6 @@ class Route implements
      * @var array<non-empty-string|string|MiddlewareInterface>
      */
     private array $middleware = [];
-
-    /**
-     * @var array<non-empty-string|string|ValueResolverInterface>
-     */
-    private array $resolvers = [];
 
     /**
      * @param non-empty-string $path
@@ -204,19 +191,6 @@ class Route implements
     {
         foreach ($middleware as $class) {
             $this->middleware[] = $class;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param string|class-string|ValueResolverInterface ...$resolvers
-     * @return $this
-     */
-    public function using(string|ValueResolverInterface ...$resolvers): self
-    {
-        foreach ($resolvers as $class) {
-            $this->resolvers[] = $class;
         }
 
         return $this;

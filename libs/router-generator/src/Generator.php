@@ -1,12 +1,5 @@
 <?php
 
-/**
- * This file is part of Helix package.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 declare(strict_types=1);
 
 namespace Helix\Router\Generator;
@@ -35,7 +28,10 @@ class Generator implements GeneratorInterface
     {
         $declaration = $this->routes->find($route) ?? throw InvalidRouteNameException::notFound($route);
 
-        /** @var string $result */
+        /**
+         * @var string $result
+         * @psalm-suppress MixedArgumentTypeCoercion
+         */
         $result = \preg_replace_callback('/{(.+?)(:.+?)?}/isum', $this->replace($args), $declaration->getPath());
 
         return $this->uris->createUri($result);
@@ -43,7 +39,7 @@ class Generator implements GeneratorInterface
 
     /**
      * @param array<string, string> $arguments
-     * @return \Closure
+     * @return \Closure(array{1:string}): string
      */
     private function replace(array $arguments): \Closure
     {
