@@ -30,6 +30,7 @@
             "Helix\\Contracts\\Http\\Method\\": "libs/contracts/http-method/src",
             "Helix\\Contracts\\Http\\Middleware\\": "libs/contracts/http-middleware/src",
             "Helix\\Contracts\\Http\\StatusCode\\": "libs/contracts/http-status-code/src",
+            "Helix\\Contracts\\ParamResolver\\": "libs/contracts/param-resolver/src",
             "Helix\\Contracts\\Router\\": "libs/contracts/router/src",
             "Helix\\Http\\": "libs/http/src",
             "Helix\\Http\\Cookie\\": "libs/http-cookie/src",
@@ -37,6 +38,8 @@
             "Helix\\Http\\Method\\": "libs/http-method/src",
             "Helix\\Http\\Middleware\\": "libs/http-middleware/src",
             "Helix\\Http\\StatusCode\\": "libs/http-status-code/src",
+            "Helix\\ParamInfo\\": "libs/param-info/src",
+            "Helix\\ParamResolver\\": "libs/param-resolver/src",
             "Helix\\Router\\": "libs/router/src",
             "Helix\\Router\\Generator\\": "libs/router-generator/src"
         }
@@ -47,6 +50,7 @@
         "helix/http-method-contracts-implementation": "^1.0",
         "helix/http-middleware-contracts-implementation": "^1.0",
         "helix/http-status-code-contracts-implementation": "^1.0",
+        "helix/param-resolver-contracts-implementation": "^1.0",
         "helix/router-contracts-implementation": "^1.0"
     },
     "replace": {
@@ -61,6 +65,9 @@
         "helix/http-middleware-contracts": "self.version",
         "helix/http-status-code": "self.version",
         "helix/http-status-code-contracts": "self.version",
+        "helix/param-info": "self.version",
+        "helix/param-resolver": "self.version",
+        "helix/param-resolver-contracts": "self.version",
         "helix/router": "self.version",
         "helix/router-contracts": "self.version",
         "helix/router-generator": "self.version"
@@ -71,6 +78,7 @@
         "laminas/laminas-diactoros": "^2.12",
         "nyholm/psr7": "^1.5",
         "phpunit/phpunit": "^9.5.20",
+        "psr/container": "^1.1|^2.0",
         "squizlabs/php_codesniffer": "^3.7",
         "symfony/http-foundation": "^5.4|^6.0",
         "symfony/var-dumper": "^5.4|^6.0",
@@ -85,6 +93,8 @@
             "Helix\\Http\\Middleware\\Tests\\": "libs/http-middleware/tests",
             "Helix\\Http\\StatusCode\\Tests\\": "libs/http-status-code/tests",
             "Helix\\Http\\Tests\\": "libs/http/tests",
+            "Helix\\ParamInfo\\Tests\\": "libs/param-info/tests",
+            "Helix\\ParamResolver\\Tests\\": "libs/param-resolver/tests",
             "Helix\\Router\\Generator\\Tests\\": "libs/router-generator/tests",
             "Helix\\Router\\Tests\\": "libs/router/tests"
         }
@@ -101,15 +111,11 @@
         "optimize-autoloader": true
     },
     "scripts": {
+        "test": [ "@phpcs", "@phpunit", "@psalm" ],
         "dev:merge": "monorepo-builder merge",
         "dev:package-alias": "monorepo-builder package-alias",
         "dev:propagate": "monorepo-builder propagate",
         "dev:validate": "monorepo-builder validate",
-        "test": [
-            "@phpcs",
-            "@phpunit",
-            "@psalm"
-        ],
         "psalm": "psalm --no-cache",
         "phpcs": "phpcs --standard=phpcs.xml",
         "phpunit": "phpunit --testdox",
