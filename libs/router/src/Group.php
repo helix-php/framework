@@ -6,15 +6,15 @@ namespace Helix\Router;
 
 use Helix\Router\Internal\Normalizer;
 
-final class Group implements \IteratorAggregate, \Countable
+final class Group implements GroupInterface, \IteratorAggregate
 {
     /**
-     * @var array<Route>
+     * @var array<array-key, Route>
      */
     private array $routes;
 
     /**
-     * @param iterable<Route> $routes
+     * @param list<Route> $routes
      */
     public function __construct(iterable $routes)
     {
@@ -22,7 +22,7 @@ final class Group implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param callable(Route): void $each
+     * @param callable(Route):void $each
      * @return $this
      */
     public function each(callable $each): self
@@ -35,9 +35,7 @@ final class Group implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param string $name
-     * @param string $pattern
-     * @return $this
+     * {@inheritDoc}
      */
     public function where(string $name, string $pattern): self
     {
@@ -45,8 +43,7 @@ final class Group implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param mixed ...$middleware
-     * @return $this
+     * {@inheritDoc}
      */
     public function through(mixed ...$middleware): self
     {
@@ -54,18 +51,15 @@ final class Group implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param callable $action
-     * @return $this
+     * {@inheritDoc}
      */
-    public function then(callable $action): self
+    public function then(mixed $action): self
     {
         return $this->each(static fn (Route $route): Route => $route->then($action));
     }
 
     /**
-     * @param string $prefix
-     * @param bool $concat
-     * @return $this
+     * {@inheritDoc}
      */
     public function prefix(string $prefix, bool $concat = false): self
     {
@@ -75,9 +69,7 @@ final class Group implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param string $suffix
-     * @param bool $concat
-     * @return $this
+     * {@inheritDoc}
      */
     public function suffix(string $suffix, bool $concat = true): self
     {

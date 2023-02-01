@@ -21,5 +21,5 @@ interface MatchedRouteInterface extends RouteInterface
     /**
      * @return RouteInterface
      */
-    public function getRoute(): RouteInterface;
+    public function getDefinition(): RouteInterface;
 }

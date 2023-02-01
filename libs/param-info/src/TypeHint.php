@@ -6,13 +6,44 @@ namespace Helix\ParamInfo;
 
 interface TypeHint
 {
-    public const INT = 'int';
-    public const FLOAT = 'float';
-    public const STRING = 'string';
-    public const BOOL = 'bool';
+    /**
+     * @since PHP 5.x
+     */
     public const CALLABLE = 'callable';
+
+    /**
+     * @since PHP 5.x
+     */
     public const ARRAY = 'array';
+
+    /**
+     * @since PHP 7.0
+     */
+    public const INT = 'int';
+
+    /**
+     * @since PHP 7.0
+     */
+    public const FLOAT = 'float';
+
+    /**
+     * @since PHP 7.0
+     */
+    public const STRING = 'string';
+
+    /**
+     * @since PHP 7.0
+     */
+    public const BOOL = 'bool';
+
+    /**
+     * @since PHP 7.0
+     */
     public const SELF = 'self';
+
+    /**
+     * @since PHP 7.0
+     */
     public const PARENT = 'parent';
 
     /**

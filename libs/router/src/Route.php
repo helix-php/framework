@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Helix\Router;
 
 use Helix\Contracts\Http\Method\MethodInterface;
+use Helix\Contracts\ParamResolver\ResolverInterface;
 use Helix\Contracts\Router\RouteInterface;
 use Helix\Http\Method\Method;
 use Helix\Router\Internal\Normalizer;
 use JetBrains\PhpStorm\Language;
 use Psr\Http\Server\MiddlewareInterface;
 
-class Route implements RouteInterface, ProvidesMiddlewareInterface
+class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesResolversInterface
 {
     /**
      * @var non-empty-string|null
@@ -39,9 +40,14 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface
     private mixed $handler;
 
     /**
-     * @var array<non-empty-string|string|MiddlewareInterface>
+     * @var array<non-empty-string|class-string|MiddlewareInterface>
      */
     private array $middleware = [];
+
+    /**
+     * @var array<non-empty-string|class-string|ResolverInterface>
+     */
+    private array $resolvers = [];
 
     /**
      * @param non-empty-string $path
@@ -110,6 +116,14 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getResolvers(): array
+    {
+        return $this->resolvers;
+    }
+
+    /**
      * @param non-empty-string $path
      * @return $this
      */
@@ -173,13 +187,30 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface
     }
 
     /**
-     * @param string|class-string|MiddlewareInterface ...$middleware
+     * @param non-empty-string|class-string|MiddlewareInterface $middleware
+     * @param non-empty-string|class-string|MiddlewareInterface ...$other
+     *
      * @return $this
      */
-    public function through(string|MiddlewareInterface ...$middleware): self
+    public function through(string|MiddlewareInterface $middleware, string|MiddlewareInterface ...$middlewares): self
     {
-        foreach ($middleware as $class) {
-            $this->middleware[] = $class;
+        foreach ([$middleware, ...$middlewares] as $definition) {
+            $this->middleware[] = $definition;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param non-empty-string|class-string|ResolverInterface $resolver
+     * @param non-empty-string|class-string|ResolverInterface ...$resolvers
+     *
+     * @return $this
+     */
+    public function using(string|ResolverInterface $resolver, string|ResolverInterface ...$resolvers): self
+    {
+        foreach ([$resolver, ...$resolvers] as $definition) {
+            $this->resolvers[] = $definition;
         }
 
         return $this;

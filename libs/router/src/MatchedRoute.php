@@ -10,7 +10,7 @@ use Helix\Contracts\Router\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
-class MatchedRoute implements MatchedRouteInterface, ProvidesMiddlewareInterface
+class MatchedRoute implements MatchedRouteInterface, ProvidesMiddlewareInterface, ProvidesResolversInterface
 {
     /**
      * @param RouteInterface $route
@@ -83,6 +83,22 @@ class MatchedRoute implements MatchedRouteInterface, ProvidesMiddlewareInterface
     /**
      * {@inheritDoc}
      */
+    public function getArguments(): array
+    {
+        return $this->arguments;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getDefinition(): RouteInterface
+    {
+        return $this->route;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getMiddleware(): iterable
     {
         if ($this->route instanceof ProvidesMiddlewareInterface) {
@@ -95,16 +111,12 @@ class MatchedRoute implements MatchedRouteInterface, ProvidesMiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    public function getArguments(): array
+    public function getResolvers(): iterable
     {
-        return $this->arguments;
-    }
+        if ($this->route instanceof ProvidesResolversInterface) {
+            return $this->route->getResolvers();
+        }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getRoute(): RouteInterface
-    {
-        return $this->route;
+        return [];
     }
 }

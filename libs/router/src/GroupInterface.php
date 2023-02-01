@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Helix\Router;
 
-interface GroupInterface
+use Helix\Contracts\Router\RouteInterface;
+
+/**
+ * @template-extends \Traversable<array-key, RouteInterface>
+ */
+interface GroupInterface extends \Traversable, \Countable
 {
     /**
      * @param string $name

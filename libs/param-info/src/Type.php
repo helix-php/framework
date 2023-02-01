@@ -19,9 +19,8 @@ final class Type
     /**
      * @param \ReflectionType|null $type
      */
-    private function __construct(
-        ?\ReflectionType $type,
-    ) {
+    private function __construct(?\ReflectionType $type)
+    {
         $this->type = $type ?? self::mixed();
     }
 
