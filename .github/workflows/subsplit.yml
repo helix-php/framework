@@ -30,7 +30,7 @@ jobs:
             split_repository: 'http-middleware-contracts'
           - local_path: 'contracts/http-status-code'
             split_repository: 'http-status-code-contracts'
-          - local_path: 'contracts/param-resolver-contracts'
+          - local_path: 'contracts/param-resolver'
             split_repository: 'param-resolver-contracts'
           - local_path: 'contracts/router'
             split_repository: 'router-contracts'
