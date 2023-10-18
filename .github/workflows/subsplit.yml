@@ -56,7 +56,7 @@ jobs:
           - local_path: 'router-generator'
             split_repository: 'router-generator'
     steps:
-      - uses: actions/checkout@v3.3.0
+      - uses: actions/checkout@v3
       - run: git config --global --add safe.directory /tmp/monorepo_split/build_directory
       - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - run: git config --global --add safe.directory "*"

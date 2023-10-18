@@ -1,4 +1,4 @@
-name: static-analysis
+name: codestyle
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   psalm:
-    name: Psalm
+    name: Code Style
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -41,6 +41,6 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
           command: composer install --prefer-dist --no-interaction --no-progress
-      - name: Static Analysis
+      - name: Check Code Style
         continue-on-error: true
-        run: composer linter:check
+        run: composer phpcs
