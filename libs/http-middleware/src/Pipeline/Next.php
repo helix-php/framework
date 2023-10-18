@@ -23,8 +23,7 @@ final class Next implements RequestHandlerInterface
     public function __construct(
         private readonly MiddlewareInterface $ctx,
         private readonly RequestHandlerInterface $next,
-    ) {
-    }
+    ) {}
 
     /**
      * @param ServerRequestInterface $request

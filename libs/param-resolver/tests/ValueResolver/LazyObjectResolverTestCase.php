@@ -19,7 +19,7 @@ class LazyObjectResolverTestCase extends TestCase
         return $this->testingValueResolver(
             new LazyObjectResolver(
                 $class ?? $target::class,
-                static fn (): object => $target,
+                static fn(): object => $target,
             ),
         );
     }

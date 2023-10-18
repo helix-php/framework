@@ -6,6 +6,4 @@ namespace Helix\Router\Generator\Exception;
 
 use Helix\Contracts\Router\Exception\RouterExceptionInterface;
 
-interface RouteGeneratorExceptionInterface extends RouterExceptionInterface
-{
-}
+interface RouteGeneratorExceptionInterface extends RouterExceptionInterface {}

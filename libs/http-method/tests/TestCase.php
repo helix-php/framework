@@ -9,6 +9,4 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 /**
  * @group http-method
  */
-abstract class TestCase extends BaseTestCase
-{
-}
+abstract class TestCase extends BaseTestCase {}

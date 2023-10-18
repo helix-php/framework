@@ -14,8 +14,7 @@ abstract class Message implements MessageInterface
      */
     public function __construct(
         protected MessageInterface $message,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

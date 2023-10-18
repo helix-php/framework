@@ -18,6 +18,5 @@ final class Info
     public function __construct(
         public readonly bool $safe = false,
         public readonly bool $idempotent = false,
-    ) {
-    }
+    ) {}
 }

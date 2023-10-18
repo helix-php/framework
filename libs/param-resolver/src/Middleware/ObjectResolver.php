@@ -30,8 +30,7 @@ final class ObjectResolver extends Middleware
      */
     public function __construct(
         private readonly object $context,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

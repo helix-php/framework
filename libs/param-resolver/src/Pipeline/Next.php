@@ -21,8 +21,7 @@ final class Next implements ResolverInterface
     public function __construct(
         private readonly MiddlewareInterface $ctx,
         private readonly ResolverInterface $next,
-    ) {
-    }
+    ) {}
 
     /**
      * @param \ReflectionParameter $parameter

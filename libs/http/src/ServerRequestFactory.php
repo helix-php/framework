@@ -13,8 +13,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
 {
     public function __construct(
         protected ServerRequestFactoryInterface $factory,
-    ) {
-    }
+    ) {}
 
     /**
      * @param non-empty-string $method

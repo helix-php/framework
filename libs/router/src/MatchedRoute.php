@@ -21,8 +21,7 @@ class MatchedRoute implements MatchedRouteInterface, ProvidesMiddlewareInterface
         private readonly RouteInterface $route,
         private readonly ServerRequestInterface $request,
         private readonly array $arguments = []
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

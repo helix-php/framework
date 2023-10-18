@@ -33,8 +33,7 @@ final class NamedArgumentsResolver extends Middleware
      */
     public function __construct(
         private readonly array $arguments,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

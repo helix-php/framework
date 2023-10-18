@@ -73,7 +73,7 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
     ) {
         $this->compiler = new Compiler();
         $this->reader = $reader;
-        $this->defaultHandler = (static fn () => null);
+        $this->defaultHandler = (static fn() => null);
     }
 
     /**

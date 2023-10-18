@@ -23,6 +23,5 @@ final class Group
         public readonly array $where = [],
         public readonly array $middleware = [],
         public readonly array $resolvers = [],
-    ) {
-    }
+    ) {}
 }

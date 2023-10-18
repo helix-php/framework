@@ -64,7 +64,7 @@ enum Category: int implements CategoryInterface
     public static function parse(int $code): self
     {
         $cases = self::cases();
-        \uasort($cases, static fn (self $a, self $b): int => $b->value <=> $a->value);
+        \uasort($cases, static fn(self $a, self $b): int => $b->value <=> $a->value);
 
         foreach ($cases as $case) {
             if ($code > $case->value) {

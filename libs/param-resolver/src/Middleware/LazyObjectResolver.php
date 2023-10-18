@@ -35,8 +35,7 @@ final class LazyObjectResolver extends Middleware
     public function __construct(
         private readonly string $class,
         private readonly \Closure $resolver,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

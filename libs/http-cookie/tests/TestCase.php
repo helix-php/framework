@@ -9,6 +9,4 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 /**
  * @group http-cookie
  */
-abstract class TestCase extends BaseTestCase
-{
-}
+abstract class TestCase extends BaseTestCase {}

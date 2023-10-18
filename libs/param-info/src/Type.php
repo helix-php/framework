@@ -259,7 +259,8 @@ final class Type
      */
     public function allowsInstanceOf(object $instance): bool
     {
-        return $this->match(fn (\ReflectionNamedType $type): bool =>
+        return $this->match(
+            fn(\ReflectionNamedType $type): bool =>
             $this->matchInstanceOf($type, $instance)
         );
     }
@@ -290,7 +291,8 @@ final class Type
      */
     public function allowsSubclassOf(string $class): bool
     {
-        return $this->match(fn (\ReflectionNamedType $type): bool =>
+        return $this->match(
+            fn(\ReflectionNamedType $type): bool =>
             $this->matchSubclassOf($type, $class)
         );
     }

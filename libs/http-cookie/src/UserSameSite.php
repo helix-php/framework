@@ -16,8 +16,7 @@ final class UserSameSite implements SameSiteInterface
      */
     public function __construct(
         private readonly string $value,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

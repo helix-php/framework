@@ -79,7 +79,9 @@ final class TestingValueMiddleware implements MiddlewareInterface
     {
         $reflection = $this->createParameter($param);
 
-        $this->ctx->assertSame($expected, $this->process($reflection, $this->terminal),
+        $this->ctx->assertSame(
+            $expected,
+            $this->process($reflection, $this->terminal),
             $message ?: 'Failed asserting that parameter [' . $param
                 . '] is resolvable by ['
                     . \get_debug_type($expected)

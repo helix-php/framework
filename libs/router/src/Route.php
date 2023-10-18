@@ -62,7 +62,7 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
         $this->path = Normalizer::path($path) ?: '/';
 
         /** @psalm-suppress MissingClosureReturnType */
-        $this->handler = $handler ?? (static fn () => null);
+        $this->handler = $handler ?? (static fn() => null);
 
         $this->method = $method instanceof MethodInterface ? $method : Method::parse($method);
     }

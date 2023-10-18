@@ -39,7 +39,7 @@ final class Group implements GroupInterface, \IteratorAggregate
      */
     public function where(string $name, string $pattern): self
     {
-        return $this->each(static fn (Route $route): Route => $route->where($name, $pattern));
+        return $this->each(static fn(Route $route): Route => $route->where($name, $pattern));
     }
 
     /**
@@ -47,7 +47,7 @@ final class Group implements GroupInterface, \IteratorAggregate
      */
     public function through(mixed ...$middleware): self
     {
-        return $this->each(static fn (Route $route): Route => $route->through(...$middleware));
+        return $this->each(static fn(Route $route): Route => $route->through(...$middleware));
     }
 
     /**
@@ -55,7 +55,7 @@ final class Group implements GroupInterface, \IteratorAggregate
      */
     public function then(mixed $action): self
     {
-        return $this->each(static fn (Route $route): Route => $route->then($action));
+        return $this->each(static fn(Route $route): Route => $route->then($action));
     }
 
     /**
@@ -63,7 +63,7 @@ final class Group implements GroupInterface, \IteratorAggregate
      */
     public function prefix(string $prefix, bool $concat = false): self
     {
-        return $this->each(static fn (Route $route) => $route->located(
+        return $this->each(static fn(Route $route) => $route->located(
             Normalizer::chunks([$prefix, $route->getPath()], $concat)
         ));
     }
@@ -73,7 +73,7 @@ final class Group implements GroupInterface, \IteratorAggregate
      */
     public function suffix(string $suffix, bool $concat = true): self
     {
-        return $this->each(static fn (Route $route) => $route->located(
+        return $this->each(static fn(Route $route) => $route->located(
             Normalizer::chunks([$route->getPath(), $suffix], $concat)
         ));
     }

@@ -6,6 +6,4 @@ namespace Helix\Router\Exception;
 
 use Helix\Contracts\Router\Exception\RouterExceptionInterface;
 
-class RouterException extends \Exception implements RouterExceptionInterface
-{
-}
+class RouterException extends \Exception implements RouterExceptionInterface {}

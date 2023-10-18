@@ -9,6 +9,4 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 /**
  * @group router-generator
  */
-abstract class TestCase extends BaseTestCase
-{
-}
+abstract class TestCase extends BaseTestCase {}

@@ -11,8 +11,7 @@ class RequestFactory implements RequestFactoryInterface
 {
     public function __construct(
         protected RequestFactoryInterface $factory,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

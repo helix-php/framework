@@ -18,8 +18,7 @@ class Generator implements GeneratorInterface
     public function __construct(
         private readonly UriFactoryInterface $uris,
         private readonly RepositoryInterface $routes,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

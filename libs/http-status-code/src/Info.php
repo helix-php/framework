@@ -20,6 +20,5 @@ final class Info
     public function __construct(
         public readonly string $reasonPhrase = '',
         public readonly CategoryInterface $category = Category::UNKNOWN,
-    ) {
-    }
+    ) {}
 }

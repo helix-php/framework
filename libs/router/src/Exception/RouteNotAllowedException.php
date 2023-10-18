@@ -6,6 +6,4 @@ namespace Helix\Router\Exception;
 
 use Helix\Contracts\Router\Exception\NotAllowedExceptionInterface;
 
-class RouteNotAllowedException extends RouteMatchingException implements NotAllowedExceptionInterface
-{
-}
+class RouteNotAllowedException extends RouteMatchingException implements NotAllowedExceptionInterface {}

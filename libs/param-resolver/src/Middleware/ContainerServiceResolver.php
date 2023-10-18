@@ -14,8 +14,7 @@ final class ContainerServiceResolver extends Middleware
      */
     public function __construct(
         private readonly ContainerInterface $container,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

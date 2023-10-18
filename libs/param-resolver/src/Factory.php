@@ -23,8 +23,7 @@ final class Factory implements FactoryInterface
         private readonly ResolverInterface $resolver = new ExceptionResolver(),
         private readonly MutablePipelineInterface $pipeline = new Pipeline(),
         private readonly ReaderInterface $reader = new StatelessReader(),
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

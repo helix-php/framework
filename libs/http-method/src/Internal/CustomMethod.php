@@ -26,8 +26,7 @@ final class CustomMethod implements MethodInterface
         private readonly string $name,
         private bool $safe = false,
         private bool $idempotent = false,
-    ) {
-    }
+    ) {}
 
     /**
      * {@inheritDoc}

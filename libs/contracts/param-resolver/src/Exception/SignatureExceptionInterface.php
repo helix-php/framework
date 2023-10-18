@@ -10,6 +10,4 @@ namespace Helix\Contracts\ParamResolver\Exception;
  *
  * For example, in cases where the passed function does not exist.
  */
-interface SignatureExceptionInterface extends ParamResolverExceptionInterface
-{
-}
+interface SignatureExceptionInterface extends ParamResolverExceptionInterface {}

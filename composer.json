@@ -54,36 +54,36 @@
         "helix/router-contracts-implementation": "^1.0"
     },
     "replace": {
-        "helix/http": "self.version",
-        "helix/http-cookie": "self.version",
-        "helix/http-cookie-contracts": "self.version",
-        "helix/http-header": "self.version",
-        "helix/http-header-contracts": "self.version",
-        "helix/http-method": "self.version",
-        "helix/http-method-contracts": "self.version",
-        "helix/http-middleware": "self.version",
-        "helix/http-middleware-contracts": "self.version",
-        "helix/http-status-code": "self.version",
-        "helix/http-status-code-contracts": "self.version",
-        "helix/param-info": "self.version",
-        "helix/param-resolver": "self.version",
-        "helix/param-resolver-contracts": "self.version",
-        "helix/router": "self.version",
-        "helix/router-contracts": "self.version",
-        "helix/router-generator": "self.version"
+        "helix/http": "*",
+        "helix/http-cookie": "*",
+        "helix/http-cookie-contracts": "*",
+        "helix/http-header": "*",
+        "helix/http-header-contracts": "*",
+        "helix/http-method": "*",
+        "helix/http-method-contracts": "*",
+        "helix/http-middleware": "*",
+        "helix/http-middleware-contracts": "*",
+        "helix/http-status-code": "*",
+        "helix/http-status-code-contracts": "*",
+        "helix/param-info": "*",
+        "helix/param-resolver": "*",
+        "helix/param-resolver-contracts": "*",
+        "helix/router": "*",
+        "helix/router-contracts": "*",
+        "helix/router-generator": "*"
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.35",
         "httpsoft/http-message": "^1.0",
         "jetbrains/phpstorm-attributes": "^1.0",
         "laminas/laminas-diactoros": "^2.12",
         "nyholm/psr7": "^1.5",
-        "phpunit/phpunit": "^9.5.20",
+        "phpunit/phpunit": "^10.4",
         "psr/container": "^1.1|^2.0",
-        "squizlabs/php_codesniffer": "^3.7",
         "symfony/http-foundation": "^5.4|^6.0",
         "symfony/var-dumper": "^5.4|^6.0",
         "symplify/monorepo-builder": "^11.2",
-        "vimeo/psalm": "^5.6"
+        "vimeo/psalm": "^5.15"
     },
     "autoload-dev": {
         "psr-4": {
@@ -111,15 +111,15 @@
         "optimize-autoloader": true
     },
     "scripts": {
-        "test": [ "@phpcs", "@phpunit", "@psalm" ],
-        "dev:merge": "monorepo-builder merge",
-        "dev:package-alias": "monorepo-builder package-alias",
-        "dev:propagate": "monorepo-builder propagate",
-        "dev:validate": "monorepo-builder validate",
-        "psalm": "psalm --no-cache",
-        "phpcs": "phpcs --standard=phpcs.xml",
-        "phpunit": "phpunit --testdox",
-        "phpcbf": "phpcbf -p --standard=PSR12 libs"
+        "linter": "@linter:check",
+        "linter:check": "psalm --no-cache",
+        "linter:fix": "psalm --no-cache --alter",
+        "phpcs": "@phpcs:check",
+        "phpcs:check": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes --dry-run",
+        "phpcs:fix": "php-cs-fixer fix --config=.php-cs-fixer.php --allow-risky=yes",
+        "test": "@test:unit",
+        "test:unit": "phpunit --testdox",
+        "merge": "monorepo-builder merge"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -7,6 +7,4 @@ namespace Helix\ParamResolver\Exception;
 use Helix\Contracts\ParamResolver\Exception\ParamResolverExceptionInterface;
 
 class ParamResolverException extends \Exception implements
-    ParamResolverExceptionInterface
-{
-}
+    ParamResolverExceptionInterface {}

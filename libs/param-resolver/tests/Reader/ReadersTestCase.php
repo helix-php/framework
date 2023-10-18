@@ -9,9 +9,7 @@ use Helix\ParamResolver\Factory\ReaderInterface;
 use Helix\ParamResolver\Factory\StatelessReader;
 use Helix\ParamResolver\Tests\TestCase;
 
-function testing_function(\StdClass $arg): void
-{
-}
+function testing_function(\StdClass $arg): void {}
 
 /**
  * @group param-resolver
@@ -91,7 +89,5 @@ class ReadersTestCase extends TestCase
         $reader->fromMethod(self::class, '__undefined_method');
     }
 
-    private static function testing_method(\StdClass $arg): void
-    {
-    }
+    private static function testing_method(\StdClass $arg): void {}
 }
