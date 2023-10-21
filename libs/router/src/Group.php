@@ -6,15 +6,18 @@ namespace Helix\Router;
 
 use Helix\Router\Internal\Normalizer;
 
+/**
+ * @template-implements \IteratorAggregate<array-key, Route>
+ */
 final class Group implements GroupInterface, \IteratorAggregate
 {
     /**
-     * @var array<array-key, Route>
+     * @var list<Route>
      */
     private array $routes;
 
     /**
-     * @param list<Route> $routes
+     * @param iterable<array-key, Route> $routes
      */
     public function __construct(iterable $routes)
     {
@@ -23,7 +26,6 @@ final class Group implements GroupInterface, \IteratorAggregate
 
     /**
      * @param callable(Route):void $each
-     * @return $this
      */
     public function each(callable $each): self
     {
@@ -34,33 +36,21 @@ final class Group implements GroupInterface, \IteratorAggregate
         return $this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function where(string $name, string $pattern): self
     {
         return $this->each(static fn(Route $route): Route => $route->where($name, $pattern));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function through(mixed ...$middleware): self
     {
         return $this->each(static fn(Route $route): Route => $route->through(...$middleware));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function then(mixed $action): self
     {
         return $this->each(static fn(Route $route): Route => $route->then($action));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function prefix(string $prefix, bool $concat = false): self
     {
         return $this->each(static fn(Route $route) => $route->located(
@@ -68,9 +58,6 @@ final class Group implements GroupInterface, \IteratorAggregate
         ));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function suffix(string $suffix, bool $concat = true): self
     {
         return $this->each(static fn(Route $route) => $route->located(
@@ -78,16 +65,13 @@ final class Group implements GroupInterface, \IteratorAggregate
         ));
     }
 
-    /**
-     * @return \Traversable<Route>
-     */
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->routes);
     }
 
     /**
-     * @return positive-int|0
+     * @return int<0, max>
      */
     public function count(): int
     {

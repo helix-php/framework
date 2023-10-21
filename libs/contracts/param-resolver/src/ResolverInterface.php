@@ -10,7 +10,6 @@ interface ResolverInterface
 {
     /**
      * @param \ReflectionParameter $parameter
-     * @return mixed
      * @throws NotResolvableExceptionInterface
      */
     public function handle(\ReflectionParameter $parameter): mixed;

@@ -17,26 +17,20 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
     /**
      * @var non-empty-string|null
      */
-    protected ?string $name = null;
+    private ?string $name = null;
 
     /**
      * @var array<non-empty-string, non-empty-string>
      */
-    protected array $parameters = [];
+    private array $parameters = [];
 
     /**
      * @var non-empty-string
      */
-    protected string $path;
+    private string $path;
 
-    /**
-     * @var MethodInterface
-     */
-    protected MethodInterface $method;
+    private MethodInterface $method;
 
-    /**
-     * @var mixed
-     */
     private mixed $handler;
 
     /**
@@ -51,7 +45,6 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
 
     /**
      * @param non-empty-string $path
-     * @param mixed $handler
      * @param MethodInterface|non-empty-string $method
      */
     public function __construct(
@@ -67,57 +60,36 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
         $this->method = $method instanceof MethodInterface ? $method : Method::parse($method);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getHandler(): mixed
     {
         return $this->handler;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getMethod(): MethodInterface
     {
         return $this->method;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getParameters(): array
     {
         return $this->parameters;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getMiddleware(): array
     {
         return $this->middleware;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getResolvers(): array
     {
         return $this->resolvers;
@@ -125,7 +97,6 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
 
     /**
      * @param non-empty-string $path
-     * @return $this
      */
     public function located(string $path): self
     {
@@ -136,7 +107,6 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
 
     /**
      * @param MethodInterface|non-empty-string $method
-     * @return $this
      */
     public function matched(MethodInterface|string $method): self
     {
@@ -149,10 +119,6 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
         return $this;
     }
 
-    /**
-     * @param mixed $action
-     * @return $this
-     */
     public function then(mixed $action): self
     {
         $this->handler = $action;
@@ -163,7 +129,6 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
     /**
      * @param non-empty-string $name
      * @param non-empty-string $pattern
-     * @return $this
      */
     public function where(string $name, #[Language('RegExp')] string $pattern): self
     {
@@ -177,7 +142,6 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
 
     /**
      * @param non-empty-string|null $name
-     * @return $this
      */
     public function as(?string $name): self
     {
@@ -189,8 +153,6 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
     /**
      * @param non-empty-string|class-string|MiddlewareInterface $middleware
      * @param non-empty-string|class-string|MiddlewareInterface ...$other
-     *
-     * @return $this
      */
     public function through(string|MiddlewareInterface $middleware, string|MiddlewareInterface ...$middlewares): self
     {
@@ -204,8 +166,6 @@ class Route implements RouteInterface, ProvidesMiddlewareInterface, ProvidesReso
     /**
      * @param non-empty-string|class-string|ResolverInterface $resolver
      * @param non-empty-string|class-string|ResolverInterface ...$resolvers
-     *
-     * @return $this
      */
     public function using(string|ResolverInterface $resolver, string|ResolverInterface ...$resolvers): self
     {

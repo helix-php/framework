@@ -11,9 +11,8 @@ namespace Helix\Router\Internal;
 final class Normalizer
 {
     /**
-     * @param array<string> $chunks
-     * @param bool $concat
-     * @return string
+     * @param list<non-empty-string> $chunks
+     * @return non-empty-string
      */
     public static function chunks(array $chunks, bool $concat = false): string
     {
@@ -33,9 +32,8 @@ final class Normalizer
     }
 
     /**
-     * @param string $path
-     * @param bool $atRoot
-     * @return string
+     * @param non-empty-string $path
+     * @return non-empty-string
      */
     public static function path(string $path, bool $atRoot = true): string
     {

@@ -11,7 +11,8 @@ interface ReaderInterface
 {
     /**
      * @param class-string $class
-     * @return iterable<RouteInterface>
+     *
+     * @return iterable<array-key, RouteInterface>
      * @throws BadRouteDefinitionException
      */
     public function read(string $class): iterable;

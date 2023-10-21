@@ -41,39 +41,24 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
     private const INFO_VARS = 0x02;
 
     /**
-     * @var array<Route>
+     * @var list<Route>
      */
-    protected array $routes = [];
+    private array $routes = [];
 
-    /**
-     * @var Compiler
-     */
     private Compiler $compiler;
 
-    /**
-     * @var Dispatcher|null
-     */
     private ?Dispatcher $dispatcher = null;
 
     /**
-     * @var ReaderInterface
-     */
-    private ReaderInterface $reader;
-
-    /**
-     * @var \Closure
+     * @var \Closure(mixed=):mixed
      */
     private \Closure $defaultHandler;
 
-    /**
-     * @param ReaderInterface $reader
-     */
     public function __construct(
-        ReaderInterface $reader = new AttributeReader(),
+        private readonly ReaderInterface $reader = new AttributeReader(),
     ) {
         $this->compiler = new Compiler();
-        $this->reader = $reader;
-        $this->defaultHandler = (static fn() => null);
+        $this->defaultHandler = (static fn(): mixed => null);
     }
 
     /**
@@ -257,7 +242,7 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
      */
     public function group(callable|null $group = null): Group
     {
-        $child = $this->new();
+        $child = new self($this->reader);
 
         if ($group !== null) {
             $group($child);
@@ -273,24 +258,33 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @param class-string $class
+     * @throws BadRouteDefinitionException
      */
+    public function import(string $class): Group
+    {
+        $routes = [...$this->reader->read($class)];
+
+        foreach ($routes as $route) {
+            $this->add($route);
+        }
+
+        return new Group($routes);
+    }
+
     public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->routes);
     }
 
     /**
-     * {@inheritDoc}
+     * @return int<0, max>
      */
     public function count(): int
     {
         return \count($this->routes);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function find(string $name): ?RouteInterface
     {
         foreach ($this->routes as $route) {
@@ -302,24 +296,12 @@ class Router implements RegistrarInterface, RepositoryInterface, RouterInterface
         return null;
     }
 
-    /**
-     * @return $this
-     */
-    protected function new(): self
-    {
-        return new self($this->reader);
-    }
-
-    /**
-     * @return void
-     */
     private function clear(): void
     {
         $this->dispatcher = null;
     }
 
     /**
-     * @return void
      * @throws BadRouteDefinitionException
      */
     private function compileIfNotCompiled(): void

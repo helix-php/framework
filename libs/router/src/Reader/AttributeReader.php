@@ -13,9 +13,6 @@ use Helix\Router\Route;
 
 class AttributeReader implements ReaderInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function read(string $class): iterable
     {
         try {
@@ -28,8 +25,6 @@ class AttributeReader implements ReaderInterface
     }
 
     /**
-     * @param \ReflectionClass $class
-     * @param Group $group
      * @return iterable<RouteInterface>
      * @throws BadRouteDefinitionException
      */
@@ -41,9 +36,6 @@ class AttributeReader implements ReaderInterface
     }
 
     /**
-     * @param \ReflectionClass $class
-     * @param \ReflectionMethod $method
-     * @param Group $group
      * @return iterable<RouteInterface>
      * @throws BadRouteDefinitionException
      */
@@ -70,24 +62,7 @@ class AttributeReader implements ReaderInterface
     }
 
     /**
-     * @param \ReflectionClass $class
-     * @param \ReflectionMethod $method
-     * @return non-empty-string|callable
-     */
-    private function handler(\ReflectionClass $class, \ReflectionMethod $method): string|callable
-    {
-        if ($method->isStatic()) {
-            return \Closure::fromCallable([$class->getName(), $method->getName()]);
-        }
-
-        return $class->getName() . '@' . $method->getName();
-    }
-
-    /**
      * @param non-empty-string|callable $handler
-     * @param Group $group
-     * @param RouteAttribute $route
-     * @return RouteInterface
      */
     private function make(string|callable $handler, Group $group, RouteAttribute $route): RouteInterface
     {
@@ -101,18 +76,26 @@ class AttributeReader implements ReaderInterface
             $result->where($name, $pcre);
         }
 
-        $result->using(...$group->resolvers);
-        $result->using(...$route->resolvers);
+        if ($group->resolvers !== []) {
+            $result->using(...$group->resolvers);
+        }
 
-        $result->through(...$group->middleware);
-        $result->through(...$route->middleware);
+        if ($route->resolvers !== []) {
+            $result->using(...$route->resolvers);
+        }
+
+        if ($group->middleware !== []) {
+            $result->through(...$group->middleware);
+        }
+
+        if ($route->middleware !== []) {
+            $result->through(...$route->middleware);
+        }
 
         return $result->as($route->as);
     }
 
     /**
-     * @param Group $group
-     * @param RouteAttribute $route
      * @return non-empty-string
      */
     private function path(Group $group, RouteAttribute $route): string
@@ -124,9 +107,17 @@ class AttributeReader implements ReaderInterface
     }
 
     /**
-     * @param \ReflectionClass $reflection
-     * @return Group
+     * @return non-empty-string|callable
      */
+    private function handler(\ReflectionClass $class, \ReflectionMethod $method): string|callable
+    {
+        if ($method->isStatic()) {
+            return \Closure::fromCallable([$class->getName(), $method->getName()]);
+        }
+
+        return $class->getName() . '@' . $method->getName();
+    }
+
     private function group(\ReflectionClass $reflection): Group
     {
         $attributes = $reflection->getAttributes(Group::class, \ReflectionAttribute::IS_INSTANCEOF);
